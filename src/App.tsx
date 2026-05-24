@@ -5,6 +5,7 @@ import { Courses } from './pages/Courses'
 import { CourseDetail } from './pages/CourseDetail'
 import { Apply } from './pages/Apply'
 import { About } from './pages/About'
+import { Network } from './pages/Network'
 import { Login } from './pages/Login'
 import { Signup } from './pages/Signup'
 import { MyPage } from './pages/MyPage'
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="courses/:id" element={<CourseDetail />} />
         <Route path="apply" element={<Apply />} />
         <Route path="about" element={<About />} />
+        <Route path="network" element={<Network />} />
         <Route path="login" element={<Login />} />
         <Route path="signup" element={<Signup />} />
         <Route path="mypage" element={<MyPage />} />

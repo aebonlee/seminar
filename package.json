@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "og-image": "node scripts/generate-og-image.mjs"
+    "og-image": "node scripts/generate-og-image.mjs",
+    "hero-bg": "node scripts/generate-hero-bg.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.106.1",
