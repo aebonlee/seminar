@@ -72,7 +72,7 @@ export const mockCourses: Course[] = [
       { week: 6, title: 'BI 발표', topics: ['Tableau / Looker'] },
     ],
     learning_sites: [
-      { id: 'db-study', name: 'DB     created_at: iso(addDays(-22)), SQL 학습', url: 'https://db-study.dreamitbiz.com', description: 'SQL 기초~튜닝, 오라클 실습' },
+      { id: 'db-study', name: 'DB · SQL 학습', url: 'https://db-study.dreamitbiz.com', description: 'SQL 기초~튜닝, 오라클 실습' },
       { id: 'statistics', name: '통계학', url: 'https://statistics.dreamitbiz.com', description: '의사결정 통계의 기초~응용' },
       { id: 'ai-data', name: 'AI 데이터 학습', url: 'https://ai-data.dreamitbiz.com', description: '데이터 전처리·라벨링 가이드' },
     ],
