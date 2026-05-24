@@ -152,15 +152,29 @@ npm run hero-bg      # public/hero-bg.jpg
 
 ## 🚢 배포
 
-`main` 브랜치 push → [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml)이 자동 빌드/배포.
+`main` 브랜치 push → [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml) 가 자동으로 빌드 후 **`gh-pages`** 브랜치에 `force_orphan` push → GitHub Pages 가 그 브랜치를 서빙.
 
-GitHub **Settings → Secrets and variables → Actions** 등록:
-- `VITE_SUPABASE_URL`
-- `VITE_SUPABASE_ANON_KEY`
-- `VITE_SITE_URL`
-- `VITE_ADMIN_EMAILS`
+### GitHub 저장소 1회 설정
 
-**Settings → Pages → Source: GitHub Actions** 로 설정.
+1. **Settings → Secrets and variables → Actions** 에 환경변수 등록:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_SITE_URL`
+   - `VITE_ADMIN_EMAILS`
+2. **Settings → Pages**:
+   - **Source**: `Deploy from a branch`
+   - **Branch**: `gh-pages` / `(root)` → **Save**
+   - Custom domain: `seminar.dreamitbiz.com` (CNAME 은 워크플로우가 자동 보장)
+
+이후 `main` 에 push할 때마다 워크플로우가 빌드 → `gh-pages` push → 사이트 자동 갱신.
+
+### 자주 보는 이슈
+
+| 증상 | 원인 / 해결 |
+|---|---|
+| 빈 페이지 + `Failed to load module script ... MIME ... octet-stream` | Pages Source 가 `gh-pages` 가 아닌 다른 브랜치/루트. 위 1회 설정 재확인 |
+| 다크 모드 흰 박스에서 텍스트 안 보임 | `.on-light` 컨텍스트 적용 누락 — `<SubPanel>` 사용 권장 |
+| localStorage 캐시 충돌 | LS 키 v2 자동 마이그레이션됨. 안 되면 `<ErrorBoundary>` 의 "캐시 초기화" 버튼, 또는 DevTools 콘솔에 `Object.keys(localStorage).filter(k=>k.startsWith('seminar:')).forEach(k=>localStorage.removeItem(k));location.reload()` |
 
 ## 📚 문서
 
@@ -171,6 +185,7 @@ GitHub **Settings → Secrets and variables → Actions** 등록:
 | [docs/SITES.md](./docs/SITES.md) | DreamIT 패밀리 사이트 95개 / 14 카테고리 통합 안내 |
 | [docs/CHANGELOG.md](./docs/CHANGELOG.md) | 버전별 변경 이력 (PR #1 / #2 / #3 / docs) |
 | [docs/CONTRIBUTING.md](./docs/CONTRIBUTING.md) | 개발 컨벤션 + 새 페이지/도메인 추가 가이드 |
+| [docs/TROUBLESHOOTING.md](./docs/TROUBLESHOOTING.md) | 만난 이슈와 해결 기록 (배포 MIME 오류, 캐시, 가독성 등) |
 | [supabase/schema.sql](./supabase/schema.sql) | DB 스키마 + RLS |
 
 ## 🏢 운영사

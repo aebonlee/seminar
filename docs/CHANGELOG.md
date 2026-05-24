@@ -4,135 +4,150 @@
 
 형식: [Keep a Changelog](https://keepachangelog.com/ko/1.1.0/), 버전: [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+---
+
+## [0.5.0] — 2026-05-24 (배포·안정성 강화)
+
+### Changed (CI / 배포)
+- **GitHub Pages 배포를 `gh-pages` 브랜치 방식으로 전환**
+  - 이전: `actions/deploy-pages` (Pages Source = "GitHub Actions" 필수)
+  - 이후: `peaceiris/actions-gh-pages` 가 `dist/`를 **`gh-pages`** 브랜치에 force_orphan push
+  - 이유: Pages Source가 "Deploy from a branch: main /root"로 설정된 경우 빌드 결과물이 아닌 소스 `index.html`이 서빙되어 `src/main.tsx` 로드 시도 → MIME 오류 → 빈 페이지 발생
+  - 해결: Source를 `gh-pages` 브랜치로만 한 번 지정하면 영구 동작
+- 워크플로우 추가 옵션: `force_orphan: true` (옛 파일 비움), `cname` 자동 보장, `404.html`을 `index.html` 복제로 자동 생성 (SPA 딥링크 fallback)
+
+### Fixed (안정성)
+- **흰 배경 컨테이너의 텍스트 가독성** (`0e7dcbd`)
+  - `.on-light` / `.on-dark` 컨텍스트 클래스 도입 — `var(--text-*)` 가 컨테이너 표면색에 맞춰 강제 매핑
+  - SubPanel + Home BentoCard(`neutral`/`light` tone)에 자동 적용
+  - 다크 모드 사용자가 흰 박스 안의 sub-text를 못 보던 문제 해결
+- **`main.tsx` 부트스트랩 정리** (`f8d258a`)
+  - 이전 시도의 `setTimeout` 1.5초 fallback이 false positive로 React 렌더를 덮어쓸 위험 → 제거
+  - `index.html` no-cache 메타도 제거 (asset hash가 캐시 buster 역할)
+  - ErrorBoundary는 그대로 유지
+
+---
+
+## [0.4.0] — 2026-05-24 (가독성·안정성 핫픽스)
 
 ### Fixed
-- **서브페이지 브레드크럼 바의 다크 와인 잔재 제거** — `rgba(76,5,25,0.78)` → `var(--accent-800)` (선택된 스킴 동기화)
+- **다크모드 admin 페이지 텍스트 가독성** (PR #7, `66dbc52`)
+  - admin/*  파일의 `var(--text-*)` 를 명시적 slate 컬러(`#0f172a`/`#334155`/`#475569`/`#64748b`)로 일괄 치환
+  - 다크 모드에서 `--text`가 흰색이 되어 명시적 흰 배경 컨테이너에서 안 보이던 문제
+  - v1 잔재 `var(--gold-200|300)` → `var(--accent-700)` 동시 정리
+- **빈 페이지 회복** (PR #6, `596a873`)
+  - localStorage 캐시 마이그레이션: LS 키 `seminar:mock-courses` → `seminar:mock-courses:v2`
+  - `normalizeCourse()` 안전 가드 — `learning_sites`/`format`/`venue` 누락 시 기본값
+  - **`<ErrorBoundary>`** 신규 — 런타임 에러 시 빈 페이지 대신 안내 + "캐시 초기화" 버튼
+
+---
+
+## [0.3.1] — 2026-05-24 (모델·UI 정리)
+
+### Fixed (PR #5, `c3dd5c0`)
+- SubPage 브레드크럼 바의 다크 와인 잔재 제거 — `rgba(76,5,25,0.78)` → `var(--accent-800)` (선택 스킴 동기화)
 - mockCourses `c-002` 학습 사이트 이름 sed 사고 복구 (`DB · SQL 학습`)
 
-### Added
-- **`Course.format: 'online' | 'offline' | 'hybrid'`** + `venue` 필드 — 일반 온라인/오프라인/혼합 강좌 운영
-- 모든 강의 카드(Home / Courses / CourseDetail / Premier)에 **format 배지** 노출
-- Courses 페이지에 **진행 형태 필터** (🖥 온라인 / 🏛 오프라인 / ⚡ 혼합)
-- NewCourse 폼에 진행 형태 + 장소 필드
-- Home 12장 벤토에 **`FormatGuideCard`** (세 가지 진행 형태 안내) 추가
-- `supabase/schema.sql`: `seminar_courses.format` (check 제약) + `venue` 컬럼
+### Added (강좌 진행 형태)
+- `Course.format: 'online' | 'offline' | 'hybrid'` + `venue` 필드
+- 모든 강의 카드(Home / Courses / CourseDetail / Premier)에 **format 배지**
+- Courses 페이지에 진행 형태 필터 (🖥 / 🏛 / ⚡)
+- NewCourse 폼에 진행 형태 + 장소
+- Home **FormatGuideCard** (세 가지 진행 형태 안내)
+- `supabase/schema.sql`: `seminar_courses.format` (check) + `venue` 컬럼
 
 ### Changed (Home 정리)
-- **18장 → 12장으로 정리** — 학교적 요소(우수논문/동아리/어워드/VR/학교자랑/뉴스슬라이더) 제거
-- 세미나 본 목적(온·오프 강좌 모집)에 집중한 카드 구성:
-  슬로건 / 공지 / 빠른신청 / 마이페이지 / Featured / 모집일정 / 강의×2 / 세미나·워크숍 / 운영통계 / FormatGuide / 카카오 문의
+- **18장 → 12장으로 정리** — 학교/대학 컨셉 잔재(우수논문/동아리/어워드/VR/학교자랑/뉴스슬라이더/BrandBadge) 제거
+- 세미나 본 목적(온·오프 강좌 모집)에 집중한 카드 구성
+
+---
+
+## [0.3.0] — 2026-05-24 (PR #4, `956261a`)
+
+> **카드 컬러 통일 + 학습 사이트 강의 매핑 정책 + 전체 문서화**
 
 ### Changed (정책)
-- **카드 컬러 일관성 통일** — fuchsia / mustard / purple 등 무작위 톤을 폐기하고
-  현재 선택된 accent 스킴 기반의 5단계 톤(`hero`/`strong`/`mid`/`soft`/`light`/`neutral`/`dark`)으로 변경.
-  컬러 피커로 스킴을 바꾸면 모든 카드가 동일 톤 패밀리로 동기화됨
-- **학습 사이트 URL 무차별 공개 폐기** — 100여 개 사이트를 푸터/네트워크에 다 뿌리는
-  방식 제거. 강의별로 큐레이션된 학습 사이트만 **신청 승인된 사용자의 마이페이지**에서 노출.
-  CourseDetail은 사이트 이름만 미리보기, URL은 노출 안 함
-
-### Added
-- `Course.learning_sites: LearningSite[]` 타입/필드 — 강의별 큐레이션 매핑
-- 관리자 강의 등록 폼에 **학습 사이트 매핑 UI** (카테고리 pill + 체크박스 그리드)
-- MyPage 상단 **'내 학습 사이트' 섹션** — 승인된 강의의 매핑 사이트만 노출
-- CourseDetail에 **제공 학습 사이트 미리보기** (자물쇠 아이콘 + 이름만)
-- `supabase/schema.sql` 에 `seminar_courses.learning_sites jsonb` 컬럼 추가
-
-### Changed (Network 페이지)
-- `/network` 를 '운영 학습 분야' 페이지로 재정의 — 카테고리/개수만 노출, URL 미공개
-- 안내 패널 + "강의 신청으로 접근 가능" CTA → `/courses` · `/apply`
-
-### Changed (Home/Footer)
-- Home 벤토 하단 'DreamIT Network' → 'LEARNING FIELDS' — 카테고리 박스 + 사이트 수만
-- 푸터의 'FAMILY SITES' 박스 제거. 본사이트(`www.dreamitbiz.com`) 단순 링크만 유지
+- **카드 컬러 일관성 통일** — fuchsia/mustard/purple 등 무작위 톤 폐기, 현재 accent 스킴 기반 variants 로
+  - tones: `hero` / `strong` / `mid` / `soft` / `light` / `neutral` / `dark` (7종)
+  - CSS `--tone-*` 변수 (accent-900 → accent-50 파생)
+  - 컬러 피커 전환 시 모든 카드 동일 톤 패밀리로 동기화
+- **학습 사이트 URL 무차별 공개 폐기** — 강의별 큐레이션 + 신청 승인 시에만 마이페이지에서 URL 공개
+  - `Course.learning_sites: LearningSite[]` 추가
+  - NewCourse (admin): 카테고리 pill + 체크박스 그리드 매핑 UI
+  - CourseDetail: 사이트 이름 미리보기 (URL 잠금)
+  - MyPage: 승인된 강의의 학습 사이트만 URL 노출
+  - `/network` → '운영 학습 분야' 페이지로 재정의 (카테고리/개수만)
+  - Footer FAMILY SITES 박스 제거
 
 ### Added (docs)
-- README 전면 개편 — 현재 상태 반영 (벤토 홈, 서브페이지, 95 패밀리, 회사 정보)
-- `docs/ARCHITECTURE.md` 갱신 — 접두어 규약, OAuth, 알림, 테마 시스템, 라우팅
-- `docs/DESIGN.md` 갱신 — v2 디자인 시스템 (Nanum + 5색 + 라이트/다크, 벤토/서브페이지 패턴, 카드 톤 정책)
-- `docs/SITES.md` 신규 — DreamIT 패밀리 네트워크 안내 + **공개 정책**
-- `docs/CHANGELOG.md` 신규 — 본 문서
-- `docs/CONTRIBUTING.md` 갱신 — 새 페이지/사이트/카테고리/학습 사이트 매핑 가이드
+- README 전면 개편 / `docs/ARCHITECTURE` / `docs/DESIGN` / `docs/SITES` / `docs/CHANGELOG` / `docs/CONTRIBUTING`
 
 ---
 
-## [0.3.0] — PR #3 (2026-05-24)
+## [0.2.0] — 2026-05-24 (PR #3, `0f55378`)
 
-> **HYCU 서브페이지 패턴 + DreamIT 패밀리 사이트 네트워크 통합**
+> **HYCU 서브페이지 패턴 + DreamIT 패밀리 사이트 네트워크 (95개)**
 
 ### Added
-- **`<SubPage>` 컴포넌트**: 풀스크린 fixed 배경(`/hero-bg.jpg`) + 다크 오버레이 + 중앙 화이트 타이틀 + 액센트 반투명 브레드크럼 바 + max-1290px 컨테이너
-- **`<SubPanel>` / `<PanelHeroBanner>`**: 화이트 콘텐츠 박스 + 상단 그라데이션 배너
-- **배경 이미지 자동 생성**: `scripts/generate-hero-bg.mjs` (sharp 기반 1920×1080)
-- **`/network` 페이지**: 95개 패밀리 사이트 — 카테고리 pill 필터 + 키워드 검색 + 그룹 뷰
-- **`src/data/familySites.ts`**: 14 카테고리 + 95 사이트 + `COMPANY` 상수 (templete_2 SoT)
-- **Home 벤토 하단 DreamIT Network 섹션**: 14 카테고리 카드 그리드 + 대표 사이트 미리보기
-- **Header 메뉴 'DreamIT 사이트'** 항목 추가
+- **`<SubPage>` 컴포넌트** — 풀스크린 fixed 배경(`/hero-bg.jpg`) + 다크 오버레이 + 중앙 화이트 타이틀 + 액센트 반투명 브레드크럼 + max-1290px 컨테이너
+- `<SubPanel>` / `<PanelHeroBanner>` — 화이트 콘텐츠 박스 + 상단 그라데이션 배너
+- `scripts/generate-hero-bg.mjs` (sharp 기반 1920×1080) → `public/hero-bg.jpg`
+- `/network` 페이지 + `src/data/familySites.ts` — 95개 사이트 / 14 카테고리
+- Home 벤토 하단 'LEARNING FIELDS' 섹션
+- Header 메뉴에 'DreamIT 사이트'
 
 ### Changed
-- **모든 서브 페이지를 `<SubPage>` 패턴으로 통일**: Courses, CourseDetail, Apply, About, Login, Signup, MyPage, NotFound, AdminLayout
-- **Footer 전면 리뉴얼**: 실제 회사 정보(이애본 대표, 010-3700-0629), 카카오톡 상담 CTA, FAMILY SITES 링크
-
-### Build
-- `dist/` JS 562KB (gz 159KB), CSS 10.6KB (gz 3.1KB)
-- `public/hero-bg.jpg` 36KB
+- 모든 서브 페이지를 `<SubPage>` 패턴으로 통일 (Courses/CourseDetail/Apply/About/Login/Signup/MyPage/NotFound/AdminLayout)
+- Footer 전면 리뉴얼 — 회사 정보(templete_2 SoT) + 카카오 상담 CTA
 
 ---
 
-## [0.2.0] — PR #2 (2026-05-24)
+## [0.1.0] — 2026-05-24 (PR #2, `02820e1`)
 
-> **디자인 시스템 v2 + HYCU 벤토 + Supabase 접두어 / OAuth / OG 인프라**
+> **디자인 시스템 v2 + HYCU 벤토 + Supabase 접두어/OAuth/OG**
 
 ### Added
-- **디자인 시스템 v2** — Nanum Gothic 통일 + Deep Blue 기본 + **5색 컬러 스킴** (blue · emerald · violet · rose · amber) + **light / dark / auto 모드** (OS 동기화)
-- **`<ThemeProvider>`, `<ThemeToggle>`, `<ColorPicker>`**: localStorage 영속, `data-theme` / `data-scheme` HTML 속성 적용
-- **`<LeftRail>` 좌측 유틸리티 사이드바**: 64px 다크 글래스, 모드/컬러/로그인/SNS (HYCU 패턴)
-- **AuthContext OAuth**: `signInWithOAuth('google' | 'kakao')`, Login 페이지에 OAuth 버튼
-- **OG 메타 + 자동 생성**: `index.html` OG/Twitter 메타, `scripts/generate-og-image.mjs` (sharp 1200×630), `public/og-image.png`
-- **`src/utils/notifications.ts`**: `sendEmail` / `sendSMS` / `sendBoth` / `buildEmailHtml` — Supabase Edge Functions(`send-email` Resend / `send-sms` icode TCP) 호출
-- **Home 벤토 그리드**: 6열 dense flow, 18장 카드 (2x2 슬로건, 2x1 와이드, 1x1 아이콘), 5종 자동 회전 슬라이더 (slogan / news / paper / club / pride)
-- **PageHeader 컴포넌트**: fixed nav 높이 보정
+- 디자인 시스템 v2 — **Nanum Gothic** + **Deep Blue** + **5색 컬러** (blue/emerald/violet/rose/amber) + **light/dark/auto** 모드 (OS 동기화)
+- `<ThemeProvider>` / `<ThemeToggle>` / `<ColorPicker>` (localStorage 영속)
+- `<LeftRail>` — 64px 좌측 다크 글래스 사이드바 (모드/컬러/로그인/SNS)
+- AuthContext OAuth — `signInWithOAuth('google' | 'kakao')`
+- OG 메타 + `scripts/generate-og-image.mjs` (sharp 1200×630) → `public/og-image.png`
+- `src/utils/notifications.ts` — `sendEmail/sendSMS/sendBoth/buildEmailHtml` (Supabase Edge Functions 호출)
+- Home 벤토 그리드 (6열 dense, 18장 카드, 5종 자동 회전 슬라이더)
 
 ### Changed
-- **Supabase 접두어 일괄 적용**: `profiles` → `seminar_profiles`, `courses` → `seminar_courses`, `applications` → `seminar_applications`, `is_admin()` → `seminar_is_admin()`
-- **헤더**: 투명 → 스크롤시 dark blur, 우측 "지금 신청" 보더 버튼 (HYCU 입학지원 톤)
-- **Footer**: HYCU 풍 다크 그레이 멀티컬럼
-- **FOUC 방지**: index.html inline 스크립트로 첫 페인트 전 테마/스킴 적용
-
-### Build
-- `dist/` JS 524KB (gz 148KB), CSS 10.6KB (gz 3.1KB)
+- **Supabase 접두어 일괄 적용** — `seminar_profiles` / `seminar_courses` / `seminar_applications` + `seminar_is_admin()`
+- 헤더 — 투명 → 스크롤시 dark blur
+- Footer — HYCU 풍 다크 그레이 멀티컬럼
+- FOUC 방지 — index.html inline 스크립트로 첫 페인트 전 테마 적용
 
 ---
 
-## [0.1.0] — PR #1 (2026-05-24)
+## [0.0.1] — 2026-05-24 (PR #1, `e2fe55b`)
 
 > **다크 럭셔리 세미나 플랫폼 초기 구축**
 
-### Added
-- **React 19 + Vite 7 + TypeScript 5 + react-router v7 + @supabase/supabase-js v2** 스택 (templete_2 표준)
-- **공개 페이지**: Home(히어로·통계·피처드·CTA), Courses(필터), CourseDetail(커리큘럼·강사·신청 사이드바), Apply(신청서), About, 404
-- **인증**: Login, Signup, MyPage (Supabase Auth + role: user/admin)
-- **관리자 콘솔**: AdminLayout, Dashboard, ApplicationsAdmin(승인/거절/메모), CoursesAdmin(개강 승인/종료), NewCourse(강의 등록)
-- **`supabase/schema.sql`**: profiles/courses/applications 테이블 + RLS + `is_admin()` 헬퍼
-- **데모 모드**: Supabase 키 없이도 localStorage로 전체 흐름 시연 (Login 화면에 빠른 로그인)
-- **`.github/workflows/deploy.yml`**: main push 시 GitHub Pages 자동 배포 (Secrets 주입)
-- **`public/CNAME`**: `seminar.dreamitbiz.com`
-- **`public/404.html`**: SPA 폴백 (BrowserRouter)
-- **개발 문서**: README, `docs/ARCHITECTURE.md`, `docs/DESIGN.md`, `docs/CONTRIBUTING.md`
+### Added (초기)
+- React 19 + Vite 7 + TypeScript 5 + react-router v7 + @supabase/supabase-js v2
+- 공개 페이지: Home / Courses(필터) / CourseDetail / Apply / About / 404
+- 인증: Login / Signup / MyPage
+- 관리자 콘솔: Dashboard / ApplicationsAdmin(승인·거절·메모) / CoursesAdmin / NewCourse
+- `supabase/schema.sql` — profiles/courses/applications + RLS + `is_admin()`
+- 데모 모드 — Supabase 키 없이 localStorage로 전체 시연
+- `.github/workflows/deploy.yml` 자동 배포 (initial: GitHub Actions Pages, v0.5에서 gh-pages 브랜치로 전환)
+- 개발 문서: README / docs/ARCHITECTURE / docs/DESIGN / docs/CONTRIBUTING
 
-### Initial Design (이후 v2에서 교체됨)
-- Obsidian + Champagne Gold 컬러 팔레트 (다크 럭셔리)
-- Cormorant Garamond + Inter + Noto Serif KR 타이포그래피
-
-### Build
-- `dist/` 528KB (JS 497KB gz 140KB, CSS 7KB gz 2.3KB)
+### Initial Design (v2에서 교체됨)
+- Obsidian Black + Champagne Gold 팔레트
+- Cormorant Garamond + Inter + Noto Serif KR
 
 ---
 
 ## 운영 노트
 
-- **배포 트리거**: `main` 브랜치 push → GitHub Actions(`.github/workflows/deploy.yml`)
-- **머지 전략**: PR squash merge (커밋 히스토리 간결화)
-- **브랜치 정리**: PR 머지 후 feature 브랜치 삭제
+- **배포 트리거**: `main` push → GitHub Actions(`.github/workflows/deploy.yml`) → `dist/` → `gh-pages` 브랜치 force_orphan push → Pages 가 gh-pages 서빙
+- **Pages 설정 (1회)**: Settings → Pages → Source: `Deploy from a branch` / Branch: `gh-pages` / `(root)`
+- **머지 전략**: PR squash merge
+- **브랜치 정리**: PR 머지 후 feature 브랜치 삭제, main만 유지
 - **Supabase 마이그레이션**: 접두어 변경 시 `supabase/schema.sql` 의 SQL 을 SQL Editor 에서 실행
-- **이미지 자산**: 새 컬러/문구 적용 시 `scripts/generate-{og-image,hero-bg}.mjs` CONFIG 수정 → `npm run {og-image,hero-bg}` → 커밋
+- **이미지 자산**: `scripts/generate-{og-image,hero-bg}.mjs` CONFIG 수정 → `npm run {og-image,hero-bg}` → 커밋

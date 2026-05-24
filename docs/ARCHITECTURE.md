@@ -8,12 +8,19 @@ Profile (auth.users 1:1, table: seminar_profiles)
 
 Course (table: seminar_courses)
   - id, title, subtitle, description, category
+  - format: 'online' | 'offline' | 'hybrid'   ← 진행 형태
+  - venue: string | null                      ← 오프라인/혼합 장소
   - instructor, instructor_bio, cover_url
   - duration_weeks, sessions, level, price, capacity
   - start_date, end_date
   - status: 'draft' | 'pending' | 'approved' | 'rejected' | 'archived'
   - highlights: string[], curriculum: { week, title, topics }[]
+  - learning_sites: LearningSite[]            ← 강의별 매핑, 승인 시 MyPage 노출
   - created_at, approved_at
+
+LearningSite
+  - id (familySites.ts 의 site id)
+  - name, url, description
 
 Application (table: seminar_applications)
   - id, course_id (FK), user_id (FK auth.users)
@@ -93,6 +100,19 @@ const html = buildEmailHtml({
 - Edge Function `send-email`: Resend API (키는 Function 환경변수)
 - Edge Function `send-sms`: icode TCP 게이트웨이
 - 데모 모드(Supabase 미설정)에서는 콘솔 로그로 모킹
+
+## 안정성 메커니즘
+
+1. **`<ErrorBoundary>` (`src/components/ErrorBoundary.tsx`)**
+   - 최상위에서 React 트리 내부 에러 캐치
+   - 빈 페이지 대신 안내 화면 + "캐시 초기화" 버튼 노출 (seminar:* localStorage 일괄 삭제)
+2. **LocalStorage 키 버전 관리**
+   - `seminar:mock-courses:v2`, `seminar:mock-applications:v2`
+   - 스키마 변경 시 키 버전을 bump 하여 옛 캐시 자동 무효화
+3. **`normalizeCourse()` 안전 가드 (`DataContext`)**
+   - 누락 필드(learning_sites/format/venue/highlights/curriculum)를 기본값으로 채워 옛 데이터/외부 DB 호환 보장
+4. **404.html SPA 폴백**
+   - 워크플로우가 `index.html`을 `404.html`로 복제 — 딥링크/새로고침 시에도 SPA 라우터가 처리
 
 ## 데모 모드
 

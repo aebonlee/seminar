@@ -83,6 +83,30 @@
 - 64px 폭, 다크 글래스(`rgba(0,0,0,0.32)` + blur)
 - 모드 토글 / 컬러 피커 / 로그인 / 마이페이지 / 관리자 / SNS
 
+## 표면 컨텍스트 — `.on-light` / `.on-dark`
+
+다크 모드 사용자가 명시적 흰 배경 컨테이너를 볼 때 `var(--text-*)` 가 흰색이 되어 보이지 않는 문제를 해결하기 위한 컨텍스트 토큰:
+
+```css
+.on-light {
+  --text:   #0f172a;  --text-2: #334155;
+  --text-3: #475569;  --text-4: #64748b;
+  --surface: #ffffff; --border:  #e2e8f0;
+}
+.on-dark {
+  --text:   #f8fafc;  --text-2: #cbd5e1;
+  --text-3: #94a3b8;  --text-4: #64748b;
+}
+```
+
+적용 위치:
+- `<SubPanel>` — 자동으로 `.on-light`
+- `<BentoCard tone="neutral|light">` — 자동으로 `.on-light`
+- `<BentoCard tone="hero|strong|mid|soft|dark">` — 자동으로 `.on-dark`
+- Admin 페이지(흰 배경 강제) — admin/* 파일에서 `var(--text-*)` 를 명시적 slate 컬러로 대체 (PR #7)
+
+원칙: **표면 색은 모드 무관 고정 → 그 표면 위 텍스트도 모드 무관 고정 컨텍스트 토큰 사용.**
+
 ## 컴포넌트 유틸 (CSS)
 
 ### Buttons
