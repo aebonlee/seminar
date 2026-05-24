@@ -20,8 +20,21 @@ interface DataApi {
 
 const Ctx = createContext<DataApi | null>(null)
 
-const LS_COURSES = 'seminar:mock-courses'
-const LS_APPS = 'seminar:mock-applications'
+// 스키마 변경(learning_sites, format, venue 추가) 시 옛 캐시 무효화를 위해 버전 bump
+const LS_COURSES = 'seminar:mock-courses:v2'
+const LS_APPS = 'seminar:mock-applications:v2'
+
+/** 옛 캐시 데이터를 새 스키마로 정규화 — 누락 필드 기본값 채움 */
+function normalizeCourse(c: Partial<Course>): Course {
+  return {
+    ...c,
+    learning_sites: Array.isArray(c.learning_sites) ? c.learning_sites : [],
+    highlights: Array.isArray(c.highlights) ? c.highlights : [],
+    curriculum: Array.isArray(c.curriculum) ? c.curriculum : [],
+    format: c.format ?? 'online',
+    venue: c.venue ?? null,
+  } as Course
+}
 
 function loadLS<T>(key: string, fallback: T): T {
   try {
@@ -44,9 +57,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const refresh = useCallback(async () => {
     setLoading(true)
     if (!supabase) {
-      const c = loadLS<Course[] | null>(LS_COURSES, null) ?? mockCourses
+      const raw = loadLS<Partial<Course>[] | null>(LS_COURSES, null)
+      const c = (raw ?? mockCourses).map(normalizeCourse)
       const a = loadLS<Application[]>(LS_APPS, [])
-      if (!loadLS<Course[] | null>(LS_COURSES, null)) saveLS(LS_COURSES, mockCourses)
+      if (!raw) saveLS(LS_COURSES, mockCourses)
       setCourses(c)
       setApplications(a)
       setLoading(false)
@@ -59,8 +73,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
         .select('*, course:seminar_courses(*)')
         .order('created_at', { ascending: false }),
     ])
-    setCourses((cs as Course[] | null) ?? [])
-    setApplications((apps as Application[] | null) ?? [])
+    setCourses(((cs as Partial<Course>[] | null) ?? []).map(normalizeCourse))
+    setApplications(
+      ((apps as (Application & { course?: Partial<Course> })[] | null) ?? []).map((a) => ({
+        ...a,
+        course: a.course ? normalizeCourse(a.course) : undefined,
+      })),
+    )
     setLoading(false)
   }, [])
 
