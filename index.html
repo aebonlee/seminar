@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko" data-theme="dark" data-scheme="blue">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- [수정] 사이트 기본 SEO -->
+    <title>DreamIT Seminar — 프리미엄 세미나 플랫폼</title>
+    <meta name="description" content="엄선된 강의만 노출되는 프리미엄 세미나 플랫폼. 관리자 큐레이션을 거친 강의로 학습자의 시간을 지킵니다." />
+    <meta name="keywords" content="세미나, 온라인 강의, 프리미엄 교육, DreamIT, 모집 강의" />
+    <meta name="author" content="DreamIT Biz" />
+    <link rel="canonical" href="https://seminar.dreamitbiz.com/" />
+
+    <!-- [수정] Open Graph (Facebook / Kakao 공유 미리보기) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="DreamIT Seminar" />
+    <meta property="og:title" content="DreamIT Seminar — 프리미엄 세미나 플랫폼" />
+    <meta property="og:description" content="엄선된 강의만 노출되는 프리미엄 세미나 플랫폼. 관리자 큐레이션을 거친 강의로 학습자의 시간을 지킵니다." />
+    <meta property="og:url" content="https://seminar.dreamitbiz.com/" />
+    <meta property="og:image" content="https://seminar.dreamitbiz.com/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="DreamIT Seminar — 프리미엄 세미나 플랫폼" />
+    <meta property="og:locale" content="ko_KR" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="DreamIT Seminar — 프리미엄 세미나 플랫폼" />
+    <meta name="twitter:description" content="엄선된 강의만 노출되는 프리미엄 세미나 플랫폼." />
+    <meta name="twitter:image" content="https://seminar.dreamitbiz.com/og-image.png" />
+
+    <!-- 카카오톡 공유: 디버거 https://developers.kakao.com/tool/debugger/sharing -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nanum+Gothic:wght@400;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- 초기 테마/스킴 적용 (FOUC 방지) -->
+    <script>
+      (function () {
+        try {
+          var m = localStorage.getItem('seminar:theme-mode') || 'dark'
+          var s = localStorage.getItem('seminar:theme-scheme') || 'blue'
+          var html = document.documentElement
+          html.setAttribute('data-theme', m)
+          html.setAttribute('data-scheme', s)
+          var resolved = m === 'auto'
+            ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
+            : m
+          html.style.colorScheme = resolved
+        } catch (e) {}
+      })()
+    </script>
+    <script type="module" crossorigin src="/assets/index-DlQWWdtE.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-D21Vpkjz.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
