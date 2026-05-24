@@ -1,29 +1,46 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useData } from '../contexts/DataContext'
+import type { Course } from '../types'
 
-const formatPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
-const formatDate = (iso: string | null) =>
+const fmtPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
+const fmtDate = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' }) : 'TBA'
 
-const NOTICES = [
-  { tag: '학사', title: '2026-2학기 수강신청 안내 (06.10 ~ 06.20)', href: '#' },
-  { tag: '모집', title: 'AI 비즈니스 전략 마스터클래스 12기 모집 시작', href: '#' },
-  { tag: '안내', title: '강의평가 진행 안내 (수강생 대상)', href: '#' },
+const NOTICES_ACA = [
+  { tag: '학사', title: '2026-2학기 수강신청 안내 (06.10 ~ 06.20)' },
+  { tag: '학사', title: '강의평가 진행 안내 (수강생 대상)' },
+  { tag: '학사', title: '수료증 발급 신청 방법 변경 안내' },
+]
+const NOTICES_GEN = [
+  { tag: '일반', title: 'DreamIT 동문 네트워크 라운지 5월 일정' },
+  { tag: '일반', title: '여름 인텐시브 캠프 사전등록 시작' },
+  { tag: '일반', title: '뉴스레터 5월호 발행' },
 ]
 const SCHEDULE = [
-  { date: '06.01', title: '모집 공고' },
+  { date: '06.01', title: '2026 하반기 모집 공고' },
   { date: '06.10 ~ 06.20', title: '수강신청 기간' },
   { date: '07.05', title: '개강' },
 ]
 const EVENTS = [
-  { tag: '특강', title: '[Executive] 글로벌 AI 전략 오프라인 세미나 (05.16)' },
-  { tag: '워크숍', title: '[Data] BI 대시보드 핸즈온 실습 4차' },
-  { tag: '네트워킹', title: '[Brand Studio] 디렉터 라운지 — 동문 네트워크' },
+  { tag: '학과 특강', title: '[Executive] 글로벌 AI 전략 오프라인 세미나 (05.16)' },
+  { tag: '학과 특강', title: '[Data] BI 대시보드 핸즈온 실습 4차' },
+  { tag: '학교 행사', title: '[Brand Studio] 디렉터 라운지 — 동문 네트워크' },
 ]
-const STATS = [
+const PAPERS = [
+  { dept: '데이터분석', author: '심성회', title: '액션러닝을 활용한 국제개발협력 교육 프로그램 성과 분석' },
+  { dept: '광고미디어 MBA', author: '김지아', title: '데이터 홈쇼핑 소비자의 구매의도 형성 탐구' },
+  { dept: '디자인', author: '김솔', title: '창의성 발달을 위한 학습 공간 디자인 연구' },
+]
+const NEWS = [
+  { src: 'DreamIT News', title: '온라인으로 석·박사 학위 — 2026 후기 모집' },
+  { src: 'DreamIT News', title: '교직원 대상 AI 업무 활용 역량 강화 프로그램' },
+  { src: 'DreamIT News', title: '생명의전화와 MOU 체결 — 정신건강 안전망 구축' },
+]
+const PRIDE = [
   { num: '1,240', unit: '명', label: '누적 수료생' },
-  { num: '24', unit: '+', label: '큐레이션 강의' },
+  { num: '25', unit: '%', label: '재수강 비율' },
+  { num: '24', unit: '개', label: '큐레이션 강의' },
   { num: '98', unit: '%', label: '평균 만족도' },
   { num: '48', unit: '명', label: '전문 강사' },
 ]
@@ -32,37 +49,20 @@ export function Home() {
   const { courses } = useData()
   const approved = courses.filter((c) => c.status === 'approved')
   const featured = approved[0]
-  const others = approved.slice(1, 3)
-  const [statIndex, setStatIndex] = useState(0)
-
-  useEffect(() => {
-    const t = setInterval(() => setStatIndex((i) => (i + 1) % STATS.length), 3200)
-    return () => clearInterval(t)
-  }, [])
-
-  const stat = STATS[statIndex]
+  const otherCourses = approved.slice(1, 3)
 
   return (
-    <section
-      className="home-hero"
-      style={{
-        position: 'relative',
-        minHeight: '100vh',
-        width: '100%',
-        color: '#fff',
-        overflow: 'hidden',
-      }}
-    >
-      {/* Background */}
+    <section style={{ position: 'relative', minHeight: '100vh', color: '#fff', overflow: 'hidden' }}>
+      {/* Background — dark blue with glow + grid pattern */}
       <div
         aria-hidden
         style={{
           position: 'fixed',
           inset: 0,
           background: `
-            radial-gradient(900px 600px at 70% 15%, rgba(37,99,235,0.55), transparent 60%),
-            radial-gradient(700px 600px at 15% 85%, rgba(139,92,246,0.4), transparent 60%),
-            linear-gradient(135deg, #0b1220 0%, #0f1e3a 50%, #08152b 100%)
+            radial-gradient(900px 700px at 75% 12%, rgba(96,165,250,0.22), transparent 60%),
+            radial-gradient(700px 600px at 15% 92%, rgba(139,92,246,0.22), transparent 60%),
+            linear-gradient(135deg, #060b18 0%, #0b1730 40%, #0c1f3e 100%)
           `,
           zIndex: -2,
         }}
@@ -72,14 +72,56 @@ export function Home() {
         style={{
           position: 'fixed',
           inset: 0,
-          backgroundImage:
-            'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
-          backgroundSize: '24px 24px',
-          backgroundPosition: '0 0',
-          opacity: 0.5,
+          backgroundImage: 'radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px)',
+          backgroundSize: '28px 28px',
+          opacity: 0.6,
           zIndex: -1,
         }}
       />
+
+      {/* SCROLL indicator (HYCU style) */}
+      <div
+        style={{
+          position: 'fixed',
+          left: 92,
+          bottom: 28,
+          zIndex: 30,
+          display: 'flex',
+          alignItems: 'center',
+          gap: 10,
+          color: 'rgba(255,255,255,0.85)',
+          fontSize: 12,
+          letterSpacing: '0.22em',
+          fontWeight: 700,
+        }}
+        className="scroll-ind"
+      >
+        SCROLL
+        <span
+          style={{
+            display: 'inline-block',
+            width: 30,
+            height: 18,
+            border: '1.5px solid rgba(255,255,255,0.85)',
+            borderRadius: 12,
+            position: 'relative',
+          }}
+        >
+          <span
+            style={{
+              position: 'absolute',
+              top: 4,
+              left: '50%',
+              marginLeft: -2,
+              width: 4,
+              height: 4,
+              borderRadius: '50%',
+              background: '#fff',
+              animation: 'dotDown 1.4s ease-in-out infinite',
+            }}
+          />
+        </span>
+      </div>
 
       <div
         className="bento-wrap"
@@ -88,434 +130,213 @@ export function Home() {
           paddingLeft: 96,
           paddingRight: 32,
           paddingBottom: 56,
-          minHeight: '100vh',
         }}
       >
-        {/* Top: Brand & Stats */}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: 14,
-            color: 'rgba(255,255,255,0.9)',
-          }}
-        >
-          <span style={{ fontSize: 13, letterSpacing: '0.18em', fontWeight: 700 }}>
-            SCROLL
-            <span
-              style={{
-                display: 'inline-block',
-                marginLeft: 10,
-                width: 32,
-                height: 18,
-                border: '1.5px solid #fff',
-                borderRadius: 12,
-                position: 'relative',
-                verticalAlign: 'middle',
-              }}
-            >
-              <span
-                style={{
-                  position: 'absolute',
-                  top: 4,
-                  left: '50%',
-                  marginLeft: -2,
-                  width: 4,
-                  height: 4,
-                  borderRadius: '50%',
-                  background: '#fff',
-                  animation: 'dotDown 1.4s var(--ease) infinite',
-                }}
-              />
-            </span>
-          </span>
-          <span style={{ fontSize: 12, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.6)' }}>
-            DREAMIT · SEMINAR PLATFORM
-          </span>
-        </div>
+        <div className="bento">
+          {/* 1. Slogan / featured slider (2x2) */}
+          <BentoCard tone="dark" size="2x2">
+            <SloganSlider courses={approved.slice(0, 4)} />
+          </BentoCard>
 
-        <div className="bento-grid">
-          {/* ============ Card A : Slogan (large dark) ============ */}
-          <Card span="a" tone="dark">
-            <div style={{ padding: 36, height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ fontSize: 11, letterSpacing: '0.24em', color: '#fcd34d', fontWeight: 800, marginBottom: 14 }}>
-                DREAMIT · 2026 PROGRAM
-              </div>
-              <h2
-                style={{
-                  fontSize: 'clamp(1.7rem, 2.6vw, 2.4rem)',
-                  lineHeight: 1.25,
-                  fontWeight: 800,
-                  color: '#fff',
-                  margin: 0,
-                  flex: 1,
-                }}
-              >
-                엄선된 강의로,
-                <br />
-                <span style={{ color: '#fcd34d' }}>다음 챕터</span>를 준비하세요
-              </h2>
-              <div style={{ marginTop: 20, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                <Link to="/courses" className="btn-on-dark btn-on-dark-primary">
-                  모집강의 보기
-                </Link>
-                <Link to="/apply" className="btn-on-dark">
-                  신청서 작성
-                </Link>
-              </div>
-            </div>
-          </Card>
+          {/* 2. 공지사항 (2x1) */}
+          <BentoCard tone="white" size="2x1">
+            <NoticeCard />
+          </BentoCard>
 
-          {/* ============ Card B : Featured Course (with image / cover gradient) ============ */}
-          <Card span="b" tone="image">
-            {featured ? (
-              <Link
-                to={`/courses/${featured.id}`}
-                style={{ display: 'block', height: '100%', textDecoration: 'none', color: '#fff', padding: 28 }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                  <div>
-                    <div style={{ fontSize: 11, letterSpacing: '0.18em', color: '#fcd34d', fontWeight: 800 }}>
-                      FEATURED
-                    </div>
-                    <div style={{ fontSize: 12, color: 'rgba(255,255,255,0.7)', marginTop: 8 }}>{featured.category}</div>
-                  </div>
-                  <ArrowMore />
-                </div>
-                <h3 style={{ marginTop: 28, fontSize: '1.45rem', lineHeight: 1.3, fontWeight: 800, color: '#fff' }}>
-                  {featured.title}
-                </h3>
-                <div style={{ marginTop: 14, color: 'rgba(255,255,255,0.8)', fontSize: 14 }}>{featured.subtitle}</div>
-                <div
-                  style={{
-                    marginTop: 24,
-                    display: 'flex',
-                    gap: 18,
-                    fontSize: 12,
-                    color: 'rgba(255,255,255,0.7)',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <span>📅 {formatDate(featured.start_date)} 개강</span>
-                  <span>👥 {featured.capacity}명</span>
-                  <span>💎 {formatPrice(featured.price)}</span>
-                </div>
-              </Link>
-            ) : (
-              <EmptyCard label="featured" />
-            )}
-          </Card>
+          {/* 3. 학사안내 (1x1 icon) */}
+          <BentoCard tone="mustard" size="1x1">
+            <IconCard
+              eyebrow="학사안내"
+              title="강의 안내"
+              icon="📘"
+              to="/about"
+            />
+          </BentoCard>
 
-          {/* ============ Card C : 공지사항 (white frost) ============ */}
-          <Card span="c" tone="white">
-            <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardTitle label="공지사항" more="/about#news" />
-              <ul style={{ listStyle: 'none', padding: 0, margin: '16px 0 0', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {NOTICES.map((n, i) => (
-                  <li key={i}>
-                    <a
-                      href={n.href}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'baseline',
-                        gap: 10,
-                        color: '#111827',
-                        fontSize: 14,
-                        textDecoration: 'none',
-                      }}
-                    >
-                      <span
-                        style={{
-                          fontSize: 11,
-                          fontWeight: 800,
-                          color: 'var(--accent-700)',
-                          minWidth: 36,
-                        }}
-                      >
-                        {n.tag}
-                      </span>
-                      <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {n.title}
-                      </span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Card>
+          {/* 4. 증명서 (1x1 icon) */}
+          <BentoCard tone="fuchsia" size="1x1">
+            <IconCard
+              eyebrow="수료증 발급"
+              title="24h 발급센터"
+              icon="🎓"
+              to="/mypage"
+            />
+          </BentoCard>
 
-          {/* ============ Card D : Quick Links (mustard) ============ */}
-          <Card span="d" tone="mustard">
-            <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardTitle label="빠른 메뉴" theme="dark" />
-              <div
-                style={{
-                  marginTop: 16,
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(3, 1fr)',
-                  gap: 8,
-                  flex: 1,
-                }}
-              >
-                {[
-                  { l: '신청', to: '/apply' },
-                  { l: '강의', to: '/courses' },
-                  { l: '일정', to: '/about' },
-                  { l: '자료실', to: '/about' },
-                  { l: '문의', to: '/about' },
-                  { l: '내정보', to: '/mypage' },
-                ].map((q) => (
-                  <Link
-                    key={q.l}
-                    to={q.to}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      padding: '14px 6px',
-                      background: 'rgba(255,255,255,0.18)',
-                      borderRadius: 8,
-                      color: '#fff',
-                      fontSize: 13,
-                      fontWeight: 800,
-                      textDecoration: 'none',
-                      transition: 'background 0.15s var(--ease)',
-                    }}
-                    onMouseEnter={(e) => ((e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.3)')}
-                    onMouseLeave={(e) => ((e.currentTarget as HTMLAnchorElement).style.background = 'rgba(255,255,255,0.18)')}
-                  >
-                    {q.l}
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </Card>
+          {/* 5. Featured premier program (2x1) — like 최고경영자과정 */}
+          <BentoCard tone="pink" size="2x1">
+            {featured ? <PremierCard course={featured} /> : <Empty />}
+          </BentoCard>
 
-          {/* ============ Card E : Stats Auto-rotating (fuchsia) ============ */}
-          <Card span="e" tone="fuchsia">
-            <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardTitle label="DreamIT 자랑" theme="dark" />
-              <div style={{ marginTop: 'auto' }}>
-                <div style={{ display: 'flex', alignItems: 'baseline', gap: 6, color: '#fff' }}>
-                  <span style={{ fontSize: 48, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1 }}>
-                    {stat.num}
-                  </span>
-                  <span style={{ fontSize: 16, fontWeight: 700 }}>{stat.unit}</span>
-                </div>
-                <div style={{ marginTop: 8, color: 'rgba(255,255,255,0.85)', fontSize: 14, fontWeight: 600 }}>
-                  {stat.label}
-                </div>
-                <div style={{ marginTop: 14, display: 'flex', gap: 6 }}>
-                  {STATS.map((_, i) => (
-                    <span
-                      key={i}
-                      style={{
-                        width: 6,
-                        height: 6,
-                        borderRadius: '50%',
-                        background: i === statIndex ? '#fff' : 'rgba(255,255,255,0.4)',
-                      }}
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </Card>
+          {/* 6. 일반 강의 카드 (1x1) */}
+          <BentoCard tone="fuchsia" size="1x1">
+            <IconCard eyebrow="개설 강의" title="Executive" icon="🏛" to="/courses?cat=Executive" />
+          </BentoCard>
 
-          {/* ============ Card F : 학사일정 (white frost) ============ */}
-          <Card span="f" tone="white">
-            <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardTitle label="이달의 학사일정" more="/about" />
-              <ul style={{ listStyle: 'none', padding: 0, margin: '16px 0 0', flex: 1, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                {SCHEDULE.map((s, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 12 }}>
-                    <span
-                      style={{
-                        fontSize: 13,
-                        fontWeight: 800,
-                        color: 'var(--accent-700)',
-                        minWidth: 110,
-                      }}
-                    >
-                      {s.date}
-                    </span>
-                    <span style={{ color: '#111827', fontSize: 14 }}>{s.title}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Card>
+          {/* 7. 비즈 강의 카드 (1x1) */}
+          <BentoCard tone="purple" size="1x1">
+            <IconCard eyebrow="개설 강의" title="Data Studio" icon="📊" to="/courses?cat=Data" />
+          </BentoCard>
 
-          {/* ============ Card G : Events (white) ============ */}
-          <Card span="g" tone="white">
-            <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <CardTitle label="세미나 · 워크숍" more="/courses" />
-              <ul style={{ listStyle: 'none', padding: 0, margin: '16px 0 0', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
-                {EVENTS.map((e, i) => (
-                  <li key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 10, fontSize: 14, color: '#111827' }}>
-                    <span style={{ fontWeight: 800, minWidth: 60, color: 'var(--accent-700)', fontSize: 11 }}>{e.tag}</span>
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      {e.title}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </Card>
+          {/* 8. 학교/학과/전공 행사 (2x1) */}
+          <BentoCard tone="white" size="2x1">
+            <ListCard title="세미나 · 워크숍" items={EVENTS} more="/courses" />
+          </BentoCard>
 
-          {/* ============ Card H : Other Course #1 ============ */}
-          <Card span="h" tone="purple">
-            {others[0] ? <CourseTile course={others[0]} /> : <EmptyCard label="course" />}
-          </Card>
+          {/* 9. DreamIT News slider (2x1) */}
+          <BentoCard tone="purple" size="2x1">
+            <NewsSlider />
+          </BentoCard>
 
-          {/* ============ Card I : Other Course #2 ============ */}
-          <Card span="i" tone="pink">
-            {others[1] ? <CourseTile course={others[1]} /> : <EmptyCard label="course" />}
-          </Card>
+          {/* 10. 이달의 학사일정 (2x1) */}
+          <BentoCard tone="white" size="2x1">
+            <ListCard
+              title="이달의 학사일정"
+              items={SCHEDULE.map((s) => ({ tag: s.date, title: s.title }))}
+              more="/about"
+              tagWidth={108}
+            />
+          </BentoCard>
 
-          {/* ============ Card J : CTA About / Contact (white) ============ */}
-          <Card span="j" tone="white">
-            <Link to="/about" style={{ display: 'block', height: '100%', textDecoration: 'none', color: '#111827', padding: 24 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-                <div>
-                  <div style={{ fontSize: 11, letterSpacing: '0.18em', fontWeight: 800, color: 'var(--accent-700)' }}>
-                    ABOUT
-                  </div>
-                  <h3 style={{ marginTop: 12, fontSize: '1.15rem', fontWeight: 800 }}>
-                    DreamIT의<br />큐레이션 기준
-                  </h3>
-                </div>
-                <ArrowMore color="#111827" />
-              </div>
-            </Link>
-          </Card>
+          {/* 11. 우수 논문/후기 (2x1) — left/right text+thumb */}
+          <BentoCard tone="pink" size="2x1">
+            <PaperSlider />
+          </BentoCard>
+
+          {/* 12. 동아리/멘토링 (2x1) */}
+          <BentoCard tone="fuchsia" size="2x1">
+            <ClubSlider />
+          </BentoCard>
+
+          {/* 13. 학교자랑 / Pride stats (2x1) */}
+          <BentoCard tone="pink" size="2x1">
+            <PrideStats />
+          </BentoCard>
+
+          {/* 14. 어워드 (1x1) */}
+          <BentoCard tone="white" size="1x1">
+            <IconCard eyebrow="" title="믿을 수 있는 어워드 수상이력" icon="🏆" to="/about" theme="light" />
+          </BentoCard>
+
+          {/* 15. 학생복지 (1x1) */}
+          <BentoCard tone="mustard" size="1x1">
+            <IconCard eyebrow="학생 지원" title="멘토십 · 네트워크" icon="🤝" to="/about" />
+          </BentoCard>
+
+          {/* 16. Brand 20th / 캠퍼스 (1x1) */}
+          <BentoCard tone="pink" size="1x1">
+            <BrandBadge />
+          </BentoCard>
+
+          {/* 17. YouTube (1x1) */}
+          <BentoCard tone="purple" size="1x1">
+            <IconCard eyebrow="" title="DreamIT TUBE" icon="▶" to="https://youtube.com" theme="dark" external />
+          </BentoCard>
+
+          {/* 18. VR/Virtual 캠퍼스 (1x1) */}
+          <BentoCard tone="white" size="1x1">
+            <IconCard eyebrow="" title="VR 캠퍼스" icon="🥽" to="/about" theme="light" />
+          </BentoCard>
+
+          {/* Tail courses */}
+          {otherCourses[0] && (
+            <BentoCard tone="purple" size="2x1">
+              <CourseTile course={otherCourses[0]} />
+            </BentoCard>
+          )}
+          {otherCourses[1] && (
+            <BentoCard tone="pink" size="2x1">
+              <CourseTile course={otherCourses[1]} />
+            </BentoCard>
+          )}
         </div>
       </div>
 
       <style>{`
         @keyframes dotDown {
           0%, 100% { transform: translateY(0); opacity: 1; }
-          50% { transform: translateY(6px); opacity: 0.4; }
+          50%      { transform: translateY(6px); opacity: 0.35; }
+        }
+        @keyframes fadeSlide {
+          from { opacity: 0; transform: translateY(6px); }
+          to   { opacity: 1; transform: translateY(0); }
         }
 
-        .bento-grid {
+        .bento {
           display: grid;
-          grid-template-columns: repeat(12, 1fr);
-          grid-auto-rows: 168px;
+          grid-template-columns: repeat(6, minmax(0, 1fr));
+          grid-auto-rows: 240px;
+          grid-auto-flow: dense;
           gap: 14px;
-          grid-template-areas:
-            "a a a a b b b b c c c c"
-            "a a a a b b b b c c c c"
-            "d d d e e e f f f g g g"
-            "h h h h i i i i j j j j";
         }
-        .bento-grid > .bento-item-a { grid-area: a; }
-        .bento-grid > .bento-item-b { grid-area: b; }
-        .bento-grid > .bento-item-c { grid-area: c; }
-        .bento-grid > .bento-item-d { grid-area: d; }
-        .bento-grid > .bento-item-e { grid-area: e; }
-        .bento-grid > .bento-item-f { grid-area: f; }
-        .bento-grid > .bento-item-g { grid-area: g; }
-        .bento-grid > .bento-item-h { grid-area: h; }
-        .bento-grid > .bento-item-i { grid-area: i; }
-        .bento-grid > .bento-item-j { grid-area: j; }
+        .bento-2x2 { grid-column: span 2; grid-row: span 2; }
+        .bento-2x1 { grid-column: span 2; grid-row: span 1; }
+        .bento-1x2 { grid-column: span 1; grid-row: span 2; }
+        .bento-1x1 { grid-column: span 1; grid-row: span 1; }
 
         @media (max-width: 1280px) {
-          .bento-grid {
-            grid-template-columns: repeat(6, 1fr);
-            grid-template-areas:
-              "a a a b b b"
-              "a a a b b b"
-              "c c d d e e"
-              "f f f g g g"
-              "h h h i i i"
-              "j j j j j j";
-          }
+          .bento { grid-template-columns: repeat(4, minmax(0, 1fr)); }
         }
         @media (max-width: 880px) {
           .bento-wrap { padding-left: 20px !important; padding-right: 20px !important; }
-          .bento-grid {
-            grid-template-columns: 1fr;
-            grid-auto-rows: minmax(160px, auto);
-            grid-template-areas:
-              "a"
-              "b"
-              "c"
-              "d"
-              "e"
-              "f"
-              "g"
-              "h"
-              "i"
-              "j";
+          .bento {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            grid-auto-rows: 220px;
           }
+          .bento-2x2 { grid-column: span 2; grid-row: span 2; }
+          .bento-2x1 { grid-column: span 2; grid-row: span 1; }
+          .scroll-ind { display: none; }
         }
-
-        .btn-on-dark {
-          display: inline-flex;
-          align-items: center;
-          gap: 6px;
-          padding: 11px 18px;
-          background: rgba(255,255,255,0.1);
-          color: #fff;
-          border: 1px solid rgba(255,255,255,0.4);
-          border-radius: 8px;
-          font-size: 0.86rem;
-          font-weight: 700;
-          text-decoration: none;
-          transition: all 0.18s var(--ease);
-        }
-        .btn-on-dark:hover { background: rgba(255,255,255,0.2); color: #fff; }
-        .btn-on-dark-primary {
-          background: #fcd34d;
-          color: #1f2937;
-          border-color: #fcd34d;
-        }
-        .btn-on-dark-primary:hover {
-          background: #fde68a;
-          color: #1f2937;
+        @media (max-width: 520px) {
+          .bento {
+            grid-template-columns: 1fr;
+            grid-auto-rows: 200px;
+          }
+          .bento-2x2 { grid-column: span 1; grid-row: span 2; }
+          .bento-2x1 { grid-column: span 1; grid-row: span 1; }
+          .bento-1x2 { grid-column: span 1; grid-row: span 1; }
         }
       `}</style>
     </section>
   )
 }
 
-// ============================================================
-function Card({
-  span,
+// ================== Card shell ==================
+function BentoCard({
   tone,
+  size,
   children,
 }: {
-  span: 'a' | 'b' | 'c' | 'd' | 'e' | 'f' | 'g' | 'h' | 'i' | 'j'
   tone: 'dark' | 'white' | 'mustard' | 'fuchsia' | 'purple' | 'pink' | 'image'
+  size: '2x2' | '2x1' | '1x2' | '1x1'
   children: React.ReactNode
 }) {
-  const styles: Record<typeof tone, React.CSSProperties> = {
+  const tones: Record<typeof tone, React.CSSProperties> = {
     dark: { background: 'rgba(15, 23, 42, 0.78)', color: '#fff' },
     image: {
       background:
-        'linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,58,138,0.85)), radial-gradient(400px 240px at 80% 30%, rgba(96,165,250,0.4), transparent 60%)',
+        'linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,58,138,0.88))',
       color: '#fff',
     },
-    white: { background: 'rgba(255,255,255,0.92)', color: '#111827' },
-    mustard: { background: 'rgba(180, 132, 26, 0.82)', color: '#fff' },
-    fuchsia: { background: 'rgba(157, 23, 77, 0.82)', color: '#fff' },
-    purple: { background: 'rgba(91, 33, 182, 0.8)', color: '#fff' },
-    pink: { background: 'rgba(131, 24, 67, 0.82)', color: '#fff' },
+    white: { background: 'rgba(255,255,255,0.92)', color: '#0f172a' },
+    mustard: { background: 'rgba(180, 132, 26, 0.85)', color: '#fff' },
+    fuchsia: { background: 'rgba(131, 24, 67, 0.82)', color: '#fff' },
+    purple: { background: 'rgba(91, 33, 182, 0.82)', color: '#fff' },
+    pink: { background: 'rgba(76, 5, 25, 0.82)', color: '#fff' },
   }
   return (
     <div
-      className={`bento-item-${span}`}
+      className={`bento-${size}`}
       style={{
-        ...styles[tone],
+        ...tones[tone],
         borderRadius: 14,
         overflow: 'hidden',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
-        border: tone === 'white' ? '1px solid rgba(15,23,42,0.06)' : '1px solid rgba(255,255,255,0.08)',
-        boxShadow: '0 8px 24px rgba(0,0,0,0.18)',
         position: 'relative',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
+        border: tone === 'white' ? '1px solid rgba(15,23,42,0.06)' : '1px solid rgba(255,255,255,0.08)',
+        boxShadow: '0 10px 28px rgba(0,0,0,0.22)',
+        animation: 'fadeSlide 0.5s var(--ease) both',
       }}
     >
       {children}
@@ -523,75 +344,512 @@ function Card({
   )
 }
 
-function CardTitle({ label, more, theme = 'light' }: { label: string; more?: string; theme?: 'light' | 'dark' }) {
-  const titleColor = theme === 'light' ? '#111827' : '#fff'
+// ================== Slogan slider (2x2) ==================
+function SloganSlider({ courses }: { courses: Course[] }) {
+  const items = courses.length
+    ? courses
+    : [
+        { id: '0', title: '엄선된 강의로 다음 챕터를 준비하세요', subtitle: 'DreamIT 2026 프로그램', category: 'Featured' } as Course,
+      ]
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % items.length), 4500)
+    return () => clearInterval(t)
+  }, [items.length])
+  const c = items[i]
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: titleColor, letterSpacing: '-0.01em' }}>
-        {label}
-      </h4>
-      {more && (
-        <Link
-          to={more}
-          aria-label="더보기"
-          style={{
-            color: theme === 'light' ? 'var(--accent-700)' : '#fff',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 26,
-            height: 26,
-            borderRadius: '50%',
-            border: `1px solid ${theme === 'light' ? 'rgba(0,0,0,0.15)' : 'rgba(255,255,255,0.35)'}`,
-            opacity: 0.9,
-            fontSize: 14,
-          }}
-        >
-          +
+    <div style={{ padding: 36, height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <div style={{ fontSize: 11, letterSpacing: '0.26em', color: '#fcd34d', fontWeight: 800, marginBottom: 14 }}>
+        DREAMIT · 2026 SEMINAR
+      </div>
+
+      <h2
+        style={{
+          fontSize: 'clamp(1.7rem, 2.7vw, 2.6rem)',
+          lineHeight: 1.25,
+          fontWeight: 800,
+          color: '#fff',
+          margin: 0,
+          flex: 1,
+        }}
+        key={c.id}
+      >
+        엄선된 강의로,
+        <br />
+        <span style={{ color: '#fcd34d' }}>다음 챕터</span>를 준비하세요
+      </h2>
+
+      <div style={{ marginTop: 20 }}>
+        <div style={{ color: '#fcd34d', fontSize: 11, letterSpacing: '0.16em', fontWeight: 800 }}>
+          {c.category} · 추천
+        </div>
+        <div style={{ marginTop: 8, fontSize: '1rem', fontWeight: 700, color: '#fff' }}>{c.title}</div>
+        {c.subtitle && (
+          <div style={{ marginTop: 4, fontSize: 13, color: 'rgba(255,255,255,0.7)' }}>{c.subtitle}</div>
+        )}
+      </div>
+
+      <div style={{ marginTop: 24, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <Link to="/courses" className="btn-on-dark btn-on-dark-primary">
+          모집강의 보기
         </Link>
-      )}
+        <Link to="/apply" className="btn-on-dark">
+          신청서 작성
+        </Link>
+      </div>
+
+      {/* dots */}
+      <div style={{ marginTop: 22, display: 'flex', gap: 6 }}>
+        {items.map((_, idx) => (
+          <button
+            key={idx}
+            aria-label={`${idx + 1}번 슬라이드`}
+            onClick={() => setI(idx)}
+            style={{
+              width: idx === i ? 22 : 8,
+              height: 6,
+              borderRadius: 3,
+              border: 0,
+              padding: 0,
+              cursor: 'pointer',
+              background: idx === i ? '#fcd34d' : 'rgba(255,255,255,0.3)',
+              transition: 'all 0.25s var(--ease)',
+            }}
+          />
+        ))}
+      </div>
+
+      <style>{`
+        .btn-on-dark {
+          display: inline-flex; align-items: center; gap: 6px;
+          padding: 11px 18px; background: rgba(255,255,255,0.1);
+          color: #fff; border: 1px solid rgba(255,255,255,0.4);
+          border-radius: 8px; font-size: .86rem; font-weight: 700;
+          text-decoration: none; transition: all .18s var(--ease);
+        }
+        .btn-on-dark:hover { background: rgba(255,255,255,0.2); color: #fff; }
+        .btn-on-dark-primary {
+          background: #fcd34d; color: #1f2937; border-color: #fcd34d;
+        }
+        .btn-on-dark-primary:hover { background: #fde68a; color: #1f2937; }
+      `}</style>
     </div>
   )
 }
 
-function CourseTile({ course }: { course: ReturnType<typeof useData>['courses'][number] }) {
+// ================== 공지사항 (2x1, tabs) ==================
+function NoticeCard() {
+  const [tab, setTab] = useState<'aca' | 'gen'>('aca')
+  const items = tab === 'aca' ? NOTICES_ACA : NOTICES_GEN
   return (
-    <Link to={`/courses/${course.id}`} style={{ display: 'block', height: '100%', textDecoration: 'none', color: '#fff', padding: 24 }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start' }}>
-        <div>
-          <div style={{ fontSize: 11, letterSpacing: '0.16em', color: 'rgba(255,255,255,0.85)', fontWeight: 800 }}>
-            {course.category}
-          </div>
-          <h3 style={{ marginTop: 8, fontSize: '1.15rem', fontWeight: 800, lineHeight: 1.35 }}>{course.title}</h3>
+    <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, letterSpacing: '-0.01em' }}>공지사항</h4>
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+          <button
+            onClick={() => setTab('aca')}
+            style={{
+              background: 'transparent', border: 0, padding: 0, cursor: 'pointer',
+              fontSize: '0.95rem', fontWeight: 800,
+              color: tab === 'aca' ? 'var(--accent-700)' : '#94a3b8',
+            }}
+          >
+            학사
+          </button>
+          <span style={{ color: '#cbd5e1' }}>·</span>
+          <button
+            onClick={() => setTab('gen')}
+            style={{
+              background: 'transparent', border: 0, padding: 0, cursor: 'pointer',
+              fontSize: '0.95rem', fontWeight: 800,
+              color: tab === 'gen' ? 'var(--accent-700)' : '#94a3b8',
+            }}
+          >
+            일반
+          </button>
+          <MoreIcon to="/about" />
         </div>
-        <ArrowMore />
       </div>
-      <div style={{ marginTop: 18, color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>{course.subtitle}</div>
+      <ul style={{ listStyle: 'none', padding: 0, margin: '16px 0 0', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {items.map((n, i) => (
+          <li key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--accent-700)', minWidth: 30 }}>{n.tag}</span>
+            <span
+              style={{
+                flex: 1,
+                color: '#0f172a',
+                fontSize: 14,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {n.title}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+// ================== Featured premier (2x1, image) ==================
+function PremierCard({ course }: { course: Course }) {
+  return (
+    <Link
+      to={`/courses/${course.id}`}
+      style={{
+        display: 'block',
+        height: '100%',
+        textDecoration: 'none',
+        color: '#fff',
+        padding: 28,
+        position: 'relative',
+      }}
+    >
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '60%' }}>
+        <div style={{ fontSize: 11, letterSpacing: '0.18em', color: '#fcd34d', fontWeight: 800 }}>FEATURED</div>
+        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 6, fontWeight: 700 }}>
+          {course.category}
+        </div>
+        <h3 style={{ marginTop: 12, fontSize: '1.25rem', lineHeight: 1.3, fontWeight: 800, color: '#fff' }}>
+          {course.title}
+        </h3>
+        <div style={{ marginTop: 8, color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>{course.subtitle}</div>
+        <div style={{ marginTop: 14, display: 'flex', gap: 14, fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>
+          <span>📅 {fmtDate(course.start_date)}</span>
+          <span>💎 {fmtPrice(course.price)}</span>
+        </div>
+      </div>
+      {/* decorative icon */}
       <div
+        aria-hidden
         style={{
-          marginTop: 'auto',
-          display: 'flex',
-          gap: 14,
-          fontSize: 12,
-          color: 'rgba(255,255,255,0.85)',
+          position: 'absolute',
+          right: 24,
+          bottom: 24,
+          fontSize: 80,
+          opacity: 0.18,
+          lineHeight: 1,
         }}
       >
-        <span>📅 {formatDate(course.start_date)}</span>
+        ◆
+      </div>
+      <div style={{ position: 'absolute', right: 22, top: 22 }}>
+        <MoreArrow color="#fff" />
+      </div>
+    </Link>
+  )
+}
+
+// ================== List card (2x1, generic) ==================
+function ListCard({
+  title,
+  items,
+  more,
+  tagWidth = 60,
+}: {
+  title: string
+  items: { tag: string; title: string }[]
+  more?: string
+  tagWidth?: number
+}) {
+  return (
+    <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>{title}</h4>
+        {more && <MoreIcon to={more} />}
+      </div>
+      <ul style={{ listStyle: 'none', padding: 0, margin: '16px 0 0', flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+        {items.map((it, i) => (
+          <li key={i} style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+            <span style={{ fontSize: 11, fontWeight: 800, color: 'var(--accent-700)', minWidth: tagWidth }}>{it.tag}</span>
+            <span style={{ flex: 1, color: '#0f172a', fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {it.title}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
+
+// ================== News slider (2x1) ==================
+function NewsSlider() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % NEWS.length), 3600)
+    return () => clearInterval(t)
+  }, [])
+  const n = NEWS[i]
+  return (
+    <div style={{ padding: 24, height: '100%', position: 'relative' }}>
+      <div style={{ fontSize: 11, color: '#fde68a', letterSpacing: '0.16em', fontWeight: 800 }}>{n.src}</div>
+      <h3 style={{ marginTop: 10, fontSize: '1.15rem', lineHeight: 1.45, fontWeight: 800 }}>{n.title}</h3>
+      <div style={{ position: 'absolute', bottom: 22, left: 24, display: 'flex', gap: 6 }}>
+        {NEWS.map((_, idx) => (
+          <span
+            key={idx}
+            style={{
+              width: idx === i ? 18 : 6,
+              height: 6,
+              borderRadius: 3,
+              background: idx === i ? '#fff' : 'rgba(255,255,255,0.4)',
+              transition: 'all 0.25s var(--ease)',
+            }}
+          />
+        ))}
+      </div>
+      <div style={{ position: 'absolute', top: 22, right: 22 }}>
+        <MoreArrow color="#fff" />
+      </div>
+    </div>
+  )
+}
+
+// ================== Paper slider (2x1) ==================
+function PaperSlider() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % PAPERS.length), 4000)
+    return () => clearInterval(t)
+  }, [])
+  const p = PAPERS[i]
+  return (
+    <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <div style={{ fontSize: 11, color: '#fde68a', letterSpacing: '0.16em', fontWeight: 800 }}>우수 수료 후기</div>
+      <h3 style={{ marginTop: 10, fontSize: '1.05rem', lineHeight: 1.45, fontWeight: 800, flex: 1 }}>{p.title}</h3>
+      <div style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
+        {p.dept}
+        <span style={{ display: 'inline-block', width: 1, height: 10, background: 'rgba(255,255,255,0.5)', margin: '0 8px', verticalAlign: 'middle' }} />
+        {p.author}
+      </div>
+      <div style={{ marginTop: 14, display: 'flex', gap: 6 }}>
+        {PAPERS.map((_, idx) => (
+          <span
+            key={idx}
+            style={{
+              width: idx === i ? 18 : 6,
+              height: 6,
+              borderRadius: 3,
+              background: idx === i ? '#fff' : 'rgba(255,255,255,0.4)',
+              transition: 'all 0.25s var(--ease)',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ================== Club / Mentoring slider (2x1) ==================
+function ClubSlider() {
+  const CLUBS = [
+    { title: 'AI 스터디 그룹', desc: '주 1회 온라인 미트업' },
+    { title: 'PM 커리어 멘토링', desc: '시니어 PM 1:1 코칭' },
+    { title: '디자인 라운지', desc: '리뷰 · 포트폴리오 네트워킹' },
+  ]
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % CLUBS.length), 3800)
+    return () => clearInterval(t)
+  }, [])
+  const c = CLUBS[i]
+  return (
+    <div style={{ padding: 24, height: '100%', position: 'relative' }}>
+      <div style={{ fontSize: 11, letterSpacing: '0.18em', color: '#fde68a', fontWeight: 800 }}>커뮤니티</div>
+      <h3 style={{ marginTop: 10, fontSize: '1.2rem', fontWeight: 800 }}>{c.title}</h3>
+      <p style={{ marginTop: 6, fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>{c.desc}</p>
+      <div style={{ position: 'absolute', bottom: 22, left: 24, display: 'flex', gap: 6 }}>
+        {CLUBS.map((_, idx) => (
+          <span
+            key={idx}
+            style={{
+              width: idx === i ? 18 : 6,
+              height: 6,
+              borderRadius: 3,
+              background: idx === i ? '#fff' : 'rgba(255,255,255,0.4)',
+              transition: 'all 0.25s var(--ease)',
+            }}
+          />
+        ))}
+      </div>
+      <div
+        aria-hidden
+        style={{ position: 'absolute', right: 26, bottom: 18, fontSize: 64, lineHeight: 1, opacity: 0.18 }}
+      >
+        ✦
+      </div>
+    </div>
+  )
+}
+
+// ================== Pride stats (2x1) ==================
+function PrideStats() {
+  const [i, setI] = useState(0)
+  useEffect(() => {
+    const t = setInterval(() => setI((x) => (x + 1) % PRIDE.length), 3000)
+    return () => clearInterval(t)
+  }, [])
+  const s = PRIDE[i]
+  return (
+    <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <h4 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>DreamIT 자랑</h4>
+      <div style={{ marginTop: 'auto', display: 'flex', alignItems: 'baseline', gap: 6 }}>
+        <span style={{ fontSize: 54, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1, color: '#fff' }}>
+          {s.num}
+        </span>
+        <span style={{ fontSize: 18, fontWeight: 700, color: 'rgba(255,255,255,0.85)' }}>{s.unit}</span>
+      </div>
+      <div style={{ marginTop: 6, color: 'rgba(255,255,255,0.85)', fontSize: 13, fontWeight: 700 }}>{s.label}</div>
+      <div style={{ marginTop: 14, display: 'flex', gap: 6 }}>
+        {PRIDE.map((_, idx) => (
+          <span
+            key={idx}
+            style={{
+              width: idx === i ? 18 : 6,
+              height: 6,
+              borderRadius: 3,
+              background: idx === i ? '#fff' : 'rgba(255,255,255,0.4)',
+              transition: 'all 0.25s var(--ease)',
+            }}
+          />
+        ))}
+      </div>
+    </div>
+  )
+}
+
+// ================== Icon card (1x1) ==================
+function IconCard({
+  eyebrow,
+  title,
+  icon,
+  to,
+  theme = 'dark',
+  external = false,
+}: {
+  eyebrow?: string
+  title: string
+  icon: string
+  to: string
+  theme?: 'light' | 'dark'
+  external?: boolean
+}) {
+  const textColor = theme === 'light' ? '#0f172a' : '#fff'
+  const sub = theme === 'light' ? '#64748b' : 'rgba(255,255,255,0.85)'
+  const Tag = external ? 'a' : Link
+  const props: Record<string, unknown> = external
+    ? { href: to, target: '_blank', rel: 'noopener noreferrer' }
+    : { to }
+  return (
+    <Tag
+      {...(props as { to: string })}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        height: '100%',
+        padding: 18,
+        textDecoration: 'none',
+        color: textColor,
+      }}
+    >
+      <div>
+        {eyebrow && <div style={{ fontSize: 11, color: sub, fontWeight: 700, letterSpacing: '0.04em' }}>{eyebrow}</div>}
+        <h4 style={{ marginTop: 8, fontSize: '1.05rem', fontWeight: 800, lineHeight: 1.3 }}>{title}</h4>
+      </div>
+      <div aria-hidden style={{ fontSize: 38, alignSelf: 'flex-end', opacity: 0.85, lineHeight: 1 }}>
+        {icon}
+      </div>
+    </Tag>
+  )
+}
+
+function BrandBadge() {
+  return (
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: '100%',
+        textAlign: 'center',
+        padding: 18,
+      }}
+    >
+      <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden>
+        <circle cx="24" cy="24" r="22" fill="none" stroke="#fcd34d" strokeWidth="2" />
+        <text x="24" y="30" textAnchor="middle" fontSize="16" fontWeight="800" fill="#fcd34d">5th</text>
+      </svg>
+      <h4 style={{ marginTop: 10, fontSize: '0.95rem', fontWeight: 800, color: '#fff' }}>
+        DreamIT<br />Seminar 5주년
+      </h4>
+    </div>
+  )
+}
+
+// ================== Course tile (2x1 reusable) ==================
+function CourseTile({ course }: { course: Course }) {
+  return (
+    <Link
+      to={`/courses/${course.id}`}
+      style={{
+        display: 'block',
+        height: '100%',
+        padding: 24,
+        textDecoration: 'none',
+        color: '#fff',
+        position: 'relative',
+      }}
+    >
+      <div style={{ fontSize: 11, letterSpacing: '0.16em', fontWeight: 800, color: '#fde68a' }}>{course.category}</div>
+      <h3 style={{ marginTop: 10, fontSize: '1.15rem', fontWeight: 800, lineHeight: 1.35 }}>{course.title}</h3>
+      <div style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>{course.subtitle}</div>
+      <div style={{ position: 'absolute', right: 22, top: 22 }}>
+        <MoreArrow color="#fff" />
+      </div>
+      <div style={{ position: 'absolute', left: 24, bottom: 22, display: 'flex', gap: 14, fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>
+        <span>📅 {fmtDate(course.start_date)}</span>
         <span>👥 {course.capacity}명</span>
       </div>
     </Link>
   )
 }
 
-function EmptyCard({ label }: { label: string }) {
+function Empty() {
   return (
     <div style={{ padding: 24, color: 'rgba(255,255,255,0.7)', fontSize: 13 }}>
-      개설 예정 {label}이 곧 공개됩니다.
+      개설 예정 강의가 곧 공개됩니다.
     </div>
   )
 }
 
-function ArrowMore({ color = '#fff' }: { color?: string }) {
+function MoreIcon({ to }: { to: string }) {
+  return (
+    <Link
+      to={to}
+      aria-label="더보기"
+      style={{
+        display: 'inline-flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: 26,
+        height: 26,
+        borderRadius: '50%',
+        border: '1px solid rgba(15,23,42,0.18)',
+        color: 'var(--accent-700)',
+        fontSize: 14,
+        textDecoration: 'none',
+      }}
+    >
+      +
+    </Link>
+  )
+}
+
+function MoreArrow({ color = '#fff' }: { color?: string }) {
   return (
     <span
       aria-hidden
@@ -599,7 +857,7 @@ function ArrowMore({ color = '#fff' }: { color?: string }) {
         width: 30,
         height: 30,
         borderRadius: '50%',
-        border: `1px solid ${color === '#fff' ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.15)'}`,
+        border: `1px solid ${color === '#fff' ? 'rgba(255,255,255,0.35)' : 'rgba(15,23,42,0.15)'}`,
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
