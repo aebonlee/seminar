@@ -22,6 +22,10 @@ create table if not exists public.seminar_courses (
   subtitle text,
   description text not null,
   category text not null,
+  /** 진행 형태 — 일반 온라인 / 오프라인 / 혼합 */
+  format text not null default 'online' check (format in ('online','offline','hybrid')),
+  /** 오프라인/혼합 강의의 진행 장소 */
+  venue text,
   instructor text not null,
   instructor_bio text,
   cover_url text,

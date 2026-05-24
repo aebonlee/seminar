@@ -1,6 +1,13 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useData } from '../contexts/DataContext'
 import { SubPage, SubPanel, PanelHeroBanner } from '../components/layout/SubPage'
+import { FORMAT_LABEL, type Course } from '../types'
+
+const formatIcon: Record<Course['format'], string> = {
+  online: '🖥',
+  offline: '🏛',
+  hybrid: '⚡',
+}
 
 const fmtPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
 const fmtDate = (iso: string | null) =>
@@ -186,6 +193,8 @@ export function CourseDetail() {
                 gap: 12,
               }}
             >
+              <KV k="진행" v={`${formatIcon[course.format]} ${FORMAT_LABEL[course.format]}`} />
+              {course.venue && <KV k="장소" v={course.venue} />}
               <KV k="기간" v={`${course.duration_weeks}주 · 총 ${course.sessions}회`} />
               <KV k="개강" v={fmtDate(course.start_date)} />
               <KV k="종강" v={fmtDate(course.end_date)} />

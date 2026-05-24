@@ -16,6 +16,8 @@ export const mockCourses: Course[] = [
     description:
       '생성형 AI 시대의 비즈니스 전략 수립부터 조직 적용까지, 실제 도입 사례 중심의 임원·관리자급 집중 과정입니다.',
     category: 'Executive',
+    format: 'hybrid',
+    venue: '서울 강남 DreamIT 라운지 + 온라인 라이브',
     instructor: '김도현 대표',
     instructor_bio: 'McKinsey 출신, 글로벌 AI 컨설팅 15년 경력',
     cover_url: null,
@@ -54,6 +56,8 @@ export const mockCourses: Course[] = [
     description:
       'SQL부터 BI 대시보드까지, 의사결정에 직접 활용 가능한 데이터 리터러시를 키우는 실무 중심 프로그램.',
     category: 'Data',
+    format: 'online',
+    venue: null,
     instructor: '이서연 디렉터',
     instructor_bio: '前 토스 Data Lead',
     cover_url: null,
@@ -86,6 +90,8 @@ export const mockCourses: Course[] = [
     description:
       '브랜드 아이덴티티부터 비주얼 시스템까지 직접 설계해보는 8주 스튜디오 클래스.',
     category: 'Design',
+    format: 'offline',
+    venue: '서울 성수 스튜디오',
     instructor: '최유진 디렉터',
     instructor_bio: 'Wieden+Kennedy 출신',
     cover_url: null,
@@ -118,6 +124,8 @@ export const mockCourses: Course[] = [
     description:
       '문제 정의부터 출시까지 PM이 알아야 할 핵심을 압축한 실습 중심 과정.',
     category: 'Product',
+    format: 'online',
+    venue: null,
     instructor: '박재훈 PM',
     instructor_bio: '前 카카오, 現 시리즈 B 스타트업 CPO',
     cover_url: null,

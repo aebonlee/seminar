@@ -2,7 +2,13 @@ import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useData } from '../contexts/DataContext'
 import { SubPage } from '../components/layout/SubPage'
-import type { Course } from '../types'
+import { FORMAT_LABEL, type Course } from '../types'
+
+const formatIcon: Record<Course['format'], string> = {
+  online: '🖥',
+  offline: '🏛',
+  hybrid: '⚡',
+}
 
 const fmtPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
 const fmtDate = (iso: string | null) =>
@@ -17,6 +23,7 @@ export function Courses() {
   const { courses, loading } = useData()
   const [category, setCategory] = useState<string>('all')
   const [level, setLevel] = useState<string>('all')
+  const [format, setFormat] = useState<string>('all')
 
   const approved = useMemo(() => courses.filter((c) => c.status === 'approved'), [courses])
   const categories = useMemo(() => ['all', ...Array.from(new Set(approved.map((c) => c.category)))], [approved])
@@ -24,9 +31,11 @@ export function Courses() {
     () =>
       approved.filter(
         (c) =>
-          (category === 'all' || c.category === category) && (level === 'all' || c.level === level),
+          (category === 'all' || c.category === category) &&
+          (level === 'all' || c.level === level) &&
+          (format === 'all' || c.format === format),
       ),
-    [approved, category, level],
+    [approved, category, level, format],
   )
 
   return (
@@ -55,6 +64,13 @@ export function Courses() {
           value={category}
           onChange={setCategory}
           render={(v) => (v === 'all' ? '전체' : v)}
+        />
+        <FilterGroup
+          label="진행"
+          options={['all', 'online', 'offline', 'hybrid']}
+          value={format}
+          onChange={setFormat}
+          render={(v) => ({ all: '전체', online: '🖥 온라인', offline: '🏛 오프라인', hybrid: '⚡ 혼합' }[v] ?? v)}
         />
         <FilterGroup
           label="레벨"
@@ -198,19 +214,33 @@ function CourseCardWhite({ course }: { course: Course }) {
             background: 'radial-gradient(400px 200px at 80% 0%, rgba(255,255,255,0.2), transparent 60%)',
           }}
         />
-        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-end' }}>
-          <span
-            style={{
-              fontSize: 11,
-              fontWeight: 800,
-              letterSpacing: '0.1em',
-              padding: '4px 10px',
-              background: 'rgba(255,255,255,0.18)',
-              backdropFilter: 'blur(4px)',
-            }}
-          >
-            {course.category}
-          </span>
+        <div style={{ position: 'relative', zIndex: 1, display: 'flex', justifyContent: 'space-between', width: '100%', alignItems: 'flex-end', gap: 8 }}>
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                letterSpacing: '0.1em',
+                padding: '4px 10px',
+                background: 'rgba(255,255,255,0.22)',
+                backdropFilter: 'blur(4px)',
+              }}
+            >
+              {course.category}
+            </span>
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 800,
+                padding: '4px 10px',
+                background: 'rgba(0,0,0,0.28)',
+                backdropFilter: 'blur(4px)',
+              }}
+              title={course.venue ?? undefined}
+            >
+              {formatIcon[course.format]} {FORMAT_LABEL[course.format]}
+            </span>
+          </div>
           <span style={{ fontSize: 11, opacity: 0.85 }}>{levelLabel[course.level]}</span>
         </div>
       </div>

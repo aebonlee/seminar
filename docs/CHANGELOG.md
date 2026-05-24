@@ -6,6 +6,23 @@
 
 ## [Unreleased]
 
+### Fixed
+- **서브페이지 브레드크럼 바의 다크 와인 잔재 제거** — `rgba(76,5,25,0.78)` → `var(--accent-800)` (선택된 스킴 동기화)
+- mockCourses `c-002` 학습 사이트 이름 sed 사고 복구 (`DB · SQL 학습`)
+
+### Added
+- **`Course.format: 'online' | 'offline' | 'hybrid'`** + `venue` 필드 — 일반 온라인/오프라인/혼합 강좌 운영
+- 모든 강의 카드(Home / Courses / CourseDetail / Premier)에 **format 배지** 노출
+- Courses 페이지에 **진행 형태 필터** (🖥 온라인 / 🏛 오프라인 / ⚡ 혼합)
+- NewCourse 폼에 진행 형태 + 장소 필드
+- Home 12장 벤토에 **`FormatGuideCard`** (세 가지 진행 형태 안내) 추가
+- `supabase/schema.sql`: `seminar_courses.format` (check 제약) + `venue` 컬럼
+
+### Changed (Home 정리)
+- **18장 → 12장으로 정리** — 학교적 요소(우수논문/동아리/어워드/VR/학교자랑/뉴스슬라이더) 제거
+- 세미나 본 목적(온·오프 강좌 모집)에 집중한 카드 구성:
+  슬로건 / 공지 / 빠른신청 / 마이페이지 / Featured / 모집일정 / 강의×2 / 세미나·워크숍 / 운영통계 / FormatGuide / 카카오 문의
+
 ### Changed (정책)
 - **카드 컬러 일관성 통일** — fuchsia / mustard / purple 등 무작위 톤을 폐기하고
   현재 선택된 accent 스킴 기반의 5단계 톤(`hero`/`strong`/`mid`/`soft`/`light`/`neutral`/`dark`)으로 변경.

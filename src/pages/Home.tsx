@@ -2,7 +2,13 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useData } from '../contexts/DataContext'
 import { familySites, siteCategories } from '../data/familySites' // familySites는 total count 표시용
-import type { Course } from '../types'
+import { FORMAT_LABEL, type Course } from '../types'
+
+const formatIcon: Record<Course['format'], string> = {
+  online: '🖥',
+  offline: '🏛',
+  hybrid: '⚡',
+}
 
 const fmtPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
 const fmtDate = (iso: string | null) =>
@@ -27,16 +33,6 @@ const EVENTS = [
   { tag: '학과 특강', title: '[Executive] 글로벌 AI 전략 오프라인 세미나 (05.16)' },
   { tag: '학과 특강', title: '[Data] BI 대시보드 핸즈온 실습 4차' },
   { tag: '학교 행사', title: '[Brand Studio] 디렉터 라운지 — 동문 네트워크' },
-]
-const PAPERS = [
-  { dept: '데이터분석', author: '심성회', title: '액션러닝을 활용한 국제개발협력 교육 프로그램 성과 분석' },
-  { dept: '광고미디어 MBA', author: '김지아', title: '데이터 홈쇼핑 소비자의 구매의도 형성 탐구' },
-  { dept: '디자인', author: '김솔', title: '창의성 발달을 위한 학습 공간 디자인 연구' },
-]
-const NEWS = [
-  { src: 'DreamIT News', title: '온라인으로 석·박사 학위 — 2026 후기 모집' },
-  { src: 'DreamIT News', title: '교직원 대상 AI 업무 활용 역량 강화 프로그램' },
-  { src: 'DreamIT News', title: '생명의전화와 MOU 체결 — 정신건강 안전망 구축' },
 ]
 const PRIDE = [
   { num: '1,240', unit: '명', label: '누적 수료생' },
@@ -134,7 +130,7 @@ export function Home() {
         }}
       >
         <div className="bento">
-          {/* 1. Slogan / featured slider (2x2) */}
+          {/* 1. Slogan + 회전 슬라이더 (2x2) */}
           <BentoCard tone="hero" size="2x2">
             <SloganSlider courses={approved.slice(0, 4)} />
           </BentoCard>
@@ -144,112 +140,64 @@ export function Home() {
             <NoticeCard />
           </BentoCard>
 
-          {/* 3. 학사안내 (1x1 icon) */}
+          {/* 3. 빠른: 신청 (1x1) */}
           <BentoCard tone="strong" size="1x1">
-            <IconCard
-              eyebrow="학사안내"
-              title="강의 안내"
-              icon="📘"
-              to="/about"
-            />
+            <IconCard eyebrow="신청하기" title="수강 신청서 작성" icon="✍" to="/apply" />
           </BentoCard>
 
-          {/* 4. 증명서 (1x1 icon) */}
+          {/* 4. 빠른: 마이페이지 (1x1) */}
           <BentoCard tone="mid" size="1x1">
-            <IconCard
-              eyebrow="수료증 발급"
-              title="24h 발급센터"
-              icon="🎓"
-              to="/mypage"
-            />
+            <IconCard eyebrow="내 학습" title="진행 현황 보기" icon="🎓" to="/mypage" />
           </BentoCard>
 
-          {/* 5. Featured premier program (2x1) — like 최고경영자과정 */}
+          {/* 5. Featured 강의 — premier (2x1) */}
           <BentoCard tone="dark" size="2x1">
             {featured ? <PremierCard course={featured} /> : <Empty />}
           </BentoCard>
 
-          {/* 6. 일반 강의 카드 (1x1) */}
-          <BentoCard tone="mid" size="1x1">
-            <IconCard eyebrow="개설 강의" title="Executive" icon="🏛" to="/courses?cat=Executive" />
-          </BentoCard>
-
-          {/* 7. 비즈 강의 카드 (1x1) */}
-          <BentoCard tone="soft" size="1x1">
-            <IconCard eyebrow="개설 강의" title="Data Studio" icon="📊" to="/courses?cat=Data" />
-          </BentoCard>
-
-          {/* 8. 학교/학과/전공 행사 (2x1) */}
-          <BentoCard tone="neutral" size="2x1">
-            <ListCard title="세미나 · 워크숍" items={EVENTS} more="/courses" />
-          </BentoCard>
-
-          {/* 9. DreamIT News slider (2x1) */}
-          <BentoCard tone="soft" size="2x1">
-            <NewsSlider />
-          </BentoCard>
-
-          {/* 10. 이달의 학사일정 (2x1) */}
+          {/* 6. 모집 일정 (2x1) */}
           <BentoCard tone="neutral" size="2x1">
             <ListCard
-              title="이달의 학사일정"
+              title="모집 일정"
               items={SCHEDULE.map((s) => ({ tag: s.date, title: s.title }))}
-              more="/about"
+              more="/courses"
               tagWidth={108}
             />
           </BentoCard>
 
-          {/* 11. 우수 논문/후기 (2x1) — left/right text+thumb */}
-          <BentoCard tone="dark" size="2x1">
-            <PaperSlider />
-          </BentoCard>
-
-          {/* 12. 동아리/멘토링 (2x1) */}
-          <BentoCard tone="mid" size="2x1">
-            <ClubSlider />
-          </BentoCard>
-
-          {/* 13. 학교자랑 / Pride stats (2x1) */}
-          <BentoCard tone="dark" size="2x1">
-            <PrideStats />
-          </BentoCard>
-
-          {/* 14. 어워드 (1x1) */}
-          <BentoCard tone="neutral" size="1x1">
-            <IconCard eyebrow="" title="믿을 수 있는 어워드 수상이력" icon="🏆" to="/about" theme="light" />
-          </BentoCard>
-
-          {/* 15. 학생복지 (1x1) */}
-          <BentoCard tone="strong" size="1x1">
-            <IconCard eyebrow="학생 지원" title="멘토십 · 네트워크" icon="🤝" to="/about" />
-          </BentoCard>
-
-          {/* 16. Brand 20th / 캠퍼스 (1x1) */}
-          <BentoCard tone="dark" size="1x1">
-            <BrandBadge />
-          </BentoCard>
-
-          {/* 17. YouTube (1x1) */}
-          <BentoCard tone="soft" size="1x1">
-            <IconCard eyebrow="" title="DreamIT TUBE" icon="▶" to="https://youtube.com" theme="dark" external />
-          </BentoCard>
-
-          {/* 18. VR/Virtual 캠퍼스 (1x1) */}
-          <BentoCard tone="neutral" size="1x1">
-            <IconCard eyebrow="" title="VR 캠퍼스" icon="🥽" to="/about" theme="light" />
-          </BentoCard>
-
-          {/* Tail courses */}
+          {/* 7. 다음 강의 #1 (2x1, format 배지 포함) */}
           {otherCourses[0] && (
             <BentoCard tone="soft" size="2x1">
               <CourseTile course={otherCourses[0]} />
             </BentoCard>
           )}
+
+          {/* 8. 다음 강의 #2 (2x1, format 배지 포함) */}
           {otherCourses[1] && (
-            <BentoCard tone="dark" size="2x1">
+            <BentoCard tone="mid" size="2x1">
               <CourseTile course={otherCourses[1]} />
             </BentoCard>
           )}
+
+          {/* 9. 세미나·워크숍 일정 (2x1) */}
+          <BentoCard tone="neutral" size="2x1">
+            <ListCard title="세미나 · 워크숍" items={EVENTS} more="/courses" />
+          </BentoCard>
+
+          {/* 10. 운영 통계 (2x1) */}
+          <BentoCard tone="dark" size="2x1">
+            <PrideStats />
+          </BentoCard>
+
+          {/* 11. 진행 형태 안내 (2x1) */}
+          <BentoCard tone="strong" size="2x1">
+            <FormatGuideCard />
+          </BentoCard>
+
+          {/* 12. 문의 (1x1) */}
+          <BentoCard tone="neutral" size="1x1">
+            <IconCard eyebrow="문의" title="카카오톡 상담" icon="💬" to="/about" theme="light" />
+          </BentoCard>
         </div>
 
         {/* ============ DreamIT Network — Family Sites ============ */}
@@ -620,18 +568,24 @@ function PremierCard({ course }: { course: Course }) {
         position: 'relative',
       }}
     >
-      <div style={{ position: 'relative', zIndex: 2, maxWidth: '60%' }}>
+      <div style={{ position: 'relative', zIndex: 2, maxWidth: '62%' }}>
         <div style={{ fontSize: 11, letterSpacing: '0.18em', color: '#fcd34d', fontWeight: 800 }}>FEATURED</div>
-        <div style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', marginTop: 6, fontWeight: 700 }}>
-          {course.category}
+        <div style={{ display: 'flex', gap: 6, marginTop: 8, flexWrap: 'wrap' }}>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', background: 'rgba(255,255,255,0.2)', padding: '3px 8px', letterSpacing: '0.1em' }}>
+            {course.category}
+          </span>
+          <span style={{ fontSize: 10, fontWeight: 800, color: '#fff', background: 'rgba(0,0,0,0.3)', padding: '3px 8px' }} title={course.venue ?? undefined}>
+            {formatIcon[course.format]} {FORMAT_LABEL[course.format]}
+          </span>
         </div>
         <h3 style={{ marginTop: 12, fontSize: '1.25rem', lineHeight: 1.3, fontWeight: 800, color: '#fff' }}>
           {course.title}
         </h3>
         <div style={{ marginTop: 8, color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>{course.subtitle}</div>
-        <div style={{ marginTop: 14, display: 'flex', gap: 14, fontSize: 12, color: 'rgba(255,255,255,0.85)' }}>
+        <div style={{ marginTop: 14, display: 'flex', gap: 14, fontSize: 12, color: 'rgba(255,255,255,0.85)', flexWrap: 'wrap' }}>
           <span>📅 {fmtDate(course.start_date)}</span>
           <span>💎 {fmtPrice(course.price)}</span>
+          {course.venue && <span>📍 {course.venue}</span>}
         </div>
       </div>
       {/* decorative icon */}
@@ -687,111 +641,47 @@ function ListCard({
   )
 }
 
-// ================== News slider (2x1) ==================
-function NewsSlider() {
-  const [i, setI] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => setI((x) => (x + 1) % NEWS.length), 3600)
-    return () => clearInterval(t)
-  }, [])
-  const n = NEWS[i]
-  return (
-    <div style={{ padding: 24, height: '100%', position: 'relative' }}>
-      <div style={{ fontSize: 11, color: '#fde68a', letterSpacing: '0.16em', fontWeight: 800 }}>{n.src}</div>
-      <h3 style={{ marginTop: 10, fontSize: '1.15rem', lineHeight: 1.45, fontWeight: 800 }}>{n.title}</h3>
-      <div style={{ position: 'absolute', bottom: 22, left: 24, display: 'flex', gap: 6 }}>
-        {NEWS.map((_, idx) => (
-          <span
-            key={idx}
-            style={{
-              width: idx === i ? 18 : 6,
-              height: 6,
-              borderRadius: 3,
-              background: idx === i ? '#fff' : 'rgba(255,255,255,0.4)',
-              transition: 'all 0.25s var(--ease)',
-            }}
-          />
-        ))}
-      </div>
-      <div style={{ position: 'absolute', top: 22, right: 22 }}>
-        <MoreArrow color="#fff" />
-      </div>
-    </div>
-  )
-}
-
-// ================== Paper slider (2x1) ==================
-function PaperSlider() {
-  const [i, setI] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => setI((x) => (x + 1) % PAPERS.length), 4000)
-    return () => clearInterval(t)
-  }, [])
-  const p = PAPERS[i]
-  return (
-    <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-      <div style={{ fontSize: 11, color: '#fde68a', letterSpacing: '0.16em', fontWeight: 800 }}>우수 수료 후기</div>
-      <h3 style={{ marginTop: 10, fontSize: '1.05rem', lineHeight: 1.45, fontWeight: 800, flex: 1 }}>{p.title}</h3>
-      <div style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>
-        {p.dept}
-        <span style={{ display: 'inline-block', width: 1, height: 10, background: 'rgba(255,255,255,0.5)', margin: '0 8px', verticalAlign: 'middle' }} />
-        {p.author}
-      </div>
-      <div style={{ marginTop: 14, display: 'flex', gap: 6 }}>
-        {PAPERS.map((_, idx) => (
-          <span
-            key={idx}
-            style={{
-              width: idx === i ? 18 : 6,
-              height: 6,
-              borderRadius: 3,
-              background: idx === i ? '#fff' : 'rgba(255,255,255,0.4)',
-              transition: 'all 0.25s var(--ease)',
-            }}
-          />
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ================== Club / Mentoring slider (2x1) ==================
-function ClubSlider() {
-  const CLUBS = [
-    { title: 'AI 스터디 그룹', desc: '주 1회 온라인 미트업' },
-    { title: 'PM 커리어 멘토링', desc: '시니어 PM 1:1 코칭' },
-    { title: '디자인 라운지', desc: '리뷰 · 포트폴리오 네트워킹' },
+// ================== 진행 형태 안내 (2x1) ==================
+// 일반 온라인 / 오프라인 / 혼합 강좌를 운영함을 시각화
+function FormatGuideCard() {
+  const items = [
+    { icon: '🖥', label: '온라인', desc: '시간·장소 자유 라이브 + 녹화' },
+    { icon: '🏛', label: '오프라인', desc: '서울 강남·성수 거점 강의실' },
+    { icon: '⚡', label: '혼합', desc: '오프라인 + 온라인 라이브 병행' },
   ]
-  const [i, setI] = useState(0)
-  useEffect(() => {
-    const t = setInterval(() => setI((x) => (x + 1) % CLUBS.length), 3800)
-    return () => clearInterval(t)
-  }, [])
-  const c = CLUBS[i]
   return (
-    <div style={{ padding: 24, height: '100%', position: 'relative' }}>
-      <div style={{ fontSize: 11, letterSpacing: '0.18em', color: '#fde68a', fontWeight: 800 }}>커뮤니티</div>
-      <h3 style={{ marginTop: 10, fontSize: '1.2rem', fontWeight: 800 }}>{c.title}</h3>
-      <p style={{ marginTop: 6, fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>{c.desc}</p>
-      <div style={{ position: 'absolute', bottom: 22, left: 24, display: 'flex', gap: 6 }}>
-        {CLUBS.map((_, idx) => (
-          <span
-            key={idx}
-            style={{
-              width: idx === i ? 18 : 6,
-              height: 6,
-              borderRadius: 3,
-              background: idx === i ? '#fff' : 'rgba(255,255,255,0.4)',
-              transition: 'all 0.25s var(--ease)',
-            }}
-          />
-        ))}
+    <div style={{ padding: 24, height: '100%', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ fontSize: 11, letterSpacing: '0.18em', color: '#fde68a', fontWeight: 800 }}>
+        FORMATS
       </div>
+      <h3 style={{ marginTop: 8, fontSize: '1.15rem', fontWeight: 800, color: '#fff' }}>
+        세 가지 진행 형태로 운영
+      </h3>
       <div
-        aria-hidden
-        style={{ position: 'absolute', right: 26, bottom: 18, fontSize: 64, lineHeight: 1, opacity: 0.18 }}
+        style={{
+          marginTop: 'auto',
+          display: 'grid',
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          gap: 10,
+        }}
       >
-        ✦
+        {items.map((it) => (
+          <div
+            key={it.label}
+            style={{
+              padding: 12,
+              background: 'rgba(255,255,255,0.1)',
+              borderRadius: 8,
+              textAlign: 'center',
+            }}
+          >
+            <div style={{ fontSize: 22, marginBottom: 4 }} aria-hidden>{it.icon}</div>
+            <div style={{ fontSize: 13, fontWeight: 800, color: '#fff' }}>{it.label}</div>
+            <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.75)', marginTop: 2, lineHeight: 1.4 }}>
+              {it.desc}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   )
@@ -879,30 +769,6 @@ function IconCard({
   )
 }
 
-function BrandBadge() {
-  return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100%',
-        textAlign: 'center',
-        padding: 18,
-      }}
-    >
-      <svg width="48" height="48" viewBox="0 0 48 48" aria-hidden>
-        <circle cx="24" cy="24" r="22" fill="none" stroke="#fcd34d" strokeWidth="2" />
-        <text x="24" y="30" textAnchor="middle" fontSize="16" fontWeight="800" fill="#fcd34d">5th</text>
-      </svg>
-      <h4 style={{ marginTop: 10, fontSize: '0.95rem', fontWeight: 800, color: '#fff' }}>
-        DreamIT<br />Seminar 5주년
-      </h4>
-    </div>
-  )
-}
-
 // ================== Course tile (2x1 reusable) ==================
 function CourseTile({ course }: { course: Course }) {
   return (
@@ -917,7 +783,14 @@ function CourseTile({ course }: { course: Course }) {
         position: 'relative',
       }}
     >
-      <div style={{ fontSize: 11, letterSpacing: '0.16em', fontWeight: 800, color: '#fde68a' }}>{course.category}</div>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        <span style={{ fontSize: 10, letterSpacing: '0.14em', fontWeight: 800, color: '#fff', background: 'rgba(255,255,255,0.18)', padding: '3px 8px' }}>
+          {course.category}
+        </span>
+        <span style={{ fontSize: 10, letterSpacing: '0.06em', fontWeight: 800, color: '#fff', background: 'rgba(0,0,0,0.28)', padding: '3px 8px' }} title={course.venue ?? undefined}>
+          {formatIcon[course.format]} {FORMAT_LABEL[course.format]}
+        </span>
+      </div>
       <h3 style={{ marginTop: 10, fontSize: '1.15rem', fontWeight: 800, lineHeight: 1.35 }}>{course.title}</h3>
       <div style={{ marginTop: 8, fontSize: 13, color: 'rgba(255,255,255,0.85)' }}>{course.subtitle}</div>
       <div style={{ position: 'absolute', right: 22, top: 22 }}>
