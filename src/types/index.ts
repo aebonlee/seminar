@@ -17,12 +17,19 @@ export interface LearningSite {
   description?: string
 }
 
+/** 강좌 진행 형태 — 일반 온라인 / 오프라인 / 혼합 */
+export type CourseFormat = 'online' | 'offline' | 'hybrid'
+
 export interface Course {
   id: string
   title: string
   subtitle: string | null
   description: string
   category: string
+  /** 강좌 진행 형태 */
+  format: CourseFormat
+  /** 오프라인/혼합 강의의 진행 장소 (옵션) */
+  venue: string | null
   instructor: string
   instructor_bio: string | null
   cover_url: string | null
@@ -40,6 +47,12 @@ export interface Course {
   learning_sites: LearningSite[]
   created_at: string
   approved_at: string | null
+}
+
+export const FORMAT_LABEL: Record<CourseFormat, string> = {
+  online: '온라인',
+  offline: '오프라인',
+  hybrid: '혼합',
 }
 
 export interface Application {

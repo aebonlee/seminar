@@ -21,6 +21,8 @@ export function NewCourse() {
     duration_weeks: 6,
     sessions: 12,
     level: 'intermediate' as Course['level'],
+    format: 'online' as Course['format'],
+    venue: '',
     price: 0,
     capacity: 20,
     start_date: '',
@@ -63,6 +65,8 @@ export function NewCourse() {
         duration_weeks: Number(form.duration_weeks),
         sessions: Number(form.sessions),
         level: form.level,
+        format: form.format,
+        venue: form.venue.trim() || null,
         price: Number(form.price),
         capacity: Number(form.capacity),
         start_date: form.start_date ? new Date(form.start_date).toISOString() : null,
@@ -110,6 +114,18 @@ export function NewCourse() {
 
         <Field label="강사" required value={form.instructor} onChange={(v) => set('instructor', v)} />
         <Field label="강사 소개 (선택)" value={form.instructor_bio} onChange={(v) => set('instructor_bio', v)} />
+
+        <SelectField
+          label="진행 형태"
+          value={form.format}
+          onChange={(v) => set('format', v as Course['format'])}
+          options={[
+            { v: 'online', l: '온라인' },
+            { v: 'offline', l: '오프라인' },
+            { v: 'hybrid', l: '혼합' },
+          ]}
+        />
+        <Field label="장소 (오프라인/혼합일 때)" value={form.venue} onChange={(v) => set('venue', v)} placeholder="예: 서울 강남 DreamIT 라운지" />
 
         <Field type="number" label="기간 (주)" value={String(form.duration_weeks)} onChange={(v) => set('duration_weeks', Number(v))} />
         <Field type="number" label="총 회차" value={String(form.sessions)} onChange={(v) => set('sessions', Number(v))} />

@@ -95,7 +95,7 @@ export function SubPage({ title, description, breadcrumb, children, actions }: P
             style={{
               maxWidth: 1290,
               margin: '40px auto 0',
-              background: 'rgba(76, 5, 25, 0.78)',
+              background: 'var(--accent-800)',
               backdropFilter: 'blur(8px)',
               WebkitBackdropFilter: 'blur(8px)',
               border: '1px solid rgba(255,255,255,0.08)',
@@ -108,6 +108,7 @@ export function SubPage({ title, description, breadcrumb, children, actions }: P
               fontSize: '0.95rem',
               fontWeight: 600,
               overflow: 'hidden',
+              boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
             }}
           >
             {breadcrumb && (
