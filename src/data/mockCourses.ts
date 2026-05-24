@@ -1,0 +1,124 @@
+import type { Course } from '../types'
+
+const now = new Date()
+const iso = (d: Date) => d.toISOString()
+const addDays = (n: number) => {
+  const d = new Date(now)
+  d.setDate(d.getDate() + n)
+  return d
+}
+
+export const mockCourses: Course[] = [
+  {
+    id: 'c-001',
+    title: 'AI 비즈니스 전략 마스터클래스',
+    subtitle: '경영자를 위한 12주 집중 프로그램',
+    description:
+      '생성형 AI 시대의 비즈니스 전략 수립부터 조직 적용까지, 실제 도입 사례 중심의 임원·관리자급 집중 과정입니다.',
+    category: 'Executive',
+    instructor: '김도현 대표',
+    instructor_bio: 'McKinsey 출신, 글로벌 AI 컨설팅 15년 경력',
+    cover_url: null,
+    duration_weeks: 12,
+    sessions: 24,
+    level: 'advanced',
+    price: 2400000,
+    capacity: 24,
+    start_date: iso(addDays(21)),
+    end_date: iso(addDays(21 + 84)),
+    status: 'approved',
+    highlights: [
+      '글로벌 케이스 스터디 18개',
+      '1:1 임원 코칭 4회 포함',
+      '수료 후 12개월 멘토십',
+    ],
+    curriculum: [
+      { week: 1, title: 'AI 환경 분석', topics: ['시장 동향', '경쟁사 사례'] },
+      { week: 4, title: '전략 프레임워크', topics: ['Value chain 재설계'] },
+      { week: 8, title: '조직 트랜스포메이션', topics: ['Change Mgmt'] },
+      { week: 12, title: '실행 로드맵', topics: ['Pilot to Scale'] },
+    ],
+    created_at: iso(addDays(-30)),
+    approved_at: iso(addDays(-14)),
+  },
+  {
+    id: 'c-002',
+    title: '데이터 기반 의사결정 워크숍',
+    subtitle: '실무진을 위한 6주 핸즈온',
+    description:
+      'SQL부터 BI 대시보드까지, 의사결정에 직접 활용 가능한 데이터 리터러시를 키우는 실무 중심 프로그램.',
+    category: 'Data',
+    instructor: '이서연 디렉터',
+    instructor_bio: '前 토스 Data Lead',
+    cover_url: null,
+    duration_weeks: 6,
+    sessions: 12,
+    level: 'intermediate',
+    price: 980000,
+    capacity: 40,
+    start_date: iso(addDays(10)),
+    end_date: iso(addDays(10 + 42)),
+    status: 'approved',
+    highlights: ['실제 기업 데이터셋', 'BI 대시보드 포트폴리오', '취업 연계'],
+    curriculum: [
+      { week: 1, title: 'SQL 기초', topics: ['SELECT, JOIN'] },
+      { week: 3, title: '데이터 모델링', topics: ['Star schema'] },
+      { week: 6, title: 'BI 발표', topics: ['Tableau / Looker'] },
+    ],
+    created_at: iso(addDays(-22)),
+    approved_at: iso(addDays(-10)),
+  },
+  {
+    id: 'c-003',
+    title: '브랜드 디자인 스튜디오',
+    subtitle: '크리에이티브 디렉터 양성 과정',
+    description:
+      '브랜드 아이덴티티부터 비주얼 시스템까지 직접 설계해보는 8주 스튜디오 클래스.',
+    category: 'Design',
+    instructor: '최유진 디렉터',
+    instructor_bio: 'Wieden+Kennedy 출신',
+    cover_url: null,
+    duration_weeks: 8,
+    sessions: 16,
+    level: 'intermediate',
+    price: 1480000,
+    capacity: 20,
+    start_date: iso(addDays(35)),
+    end_date: iso(addDays(35 + 56)),
+    status: 'approved',
+    highlights: ['실제 브랜드 리브랜딩 과제', '포트폴리오 1:1 리뷰'],
+    curriculum: [
+      { week: 1, title: '리서치', topics: ['시장·경쟁 분석'] },
+      { week: 4, title: '비주얼 시스템', topics: ['로고/타이포'] },
+      { week: 8, title: '가이드라인 제작', topics: ['브랜드북'] },
+    ],
+    created_at: iso(addDays(-40)),
+    approved_at: iso(addDays(-20)),
+  },
+  {
+    id: 'c-004',
+    title: '프로덕트 매니지먼트 부트캠프',
+    subtitle: 'PM 입문자를 위한 4주 부트캠프',
+    description:
+      '문제 정의부터 출시까지 PM이 알아야 할 핵심을 압축한 실습 중심 과정.',
+    category: 'Product',
+    instructor: '박재훈 PM',
+    instructor_bio: '前 카카오, 現 시리즈 B 스타트업 CPO',
+    cover_url: null,
+    duration_weeks: 4,
+    sessions: 8,
+    level: 'beginner',
+    price: 690000,
+    capacity: 30,
+    start_date: null,
+    end_date: null,
+    status: 'pending',
+    highlights: ['모의 출시 프로젝트', 'PRD 템플릿 제공'],
+    curriculum: [
+      { week: 1, title: '문제 발견', topics: ['User Interview'] },
+      { week: 4, title: '출시', topics: ['Launch Strategy'] },
+    ],
+    created_at: iso(addDays(-5)),
+    approved_at: null,
+  },
+]
