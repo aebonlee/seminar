@@ -387,7 +387,7 @@ function BentoCard({
   }
   return (
     <div
-      className={`bento-${size}`}
+      className={`bento-${size} ${tone === 'neutral' || tone === 'light' ? 'on-light' : 'on-dark'}`}
       style={{
         ...tones[tone],
         borderRadius: 14,

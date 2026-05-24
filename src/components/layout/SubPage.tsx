@@ -222,12 +222,12 @@ export function SubPanel({
 }) {
   return (
     <div
+      className="on-light"
       style={{
         background: '#f4f4f5',
         borderRadius: 0,
         overflow: 'hidden',
         boxShadow: '0 12px 32px rgba(5,10,24,0.18)',
-        color: '#0f172a',
       }}
     >
       {topImage}
