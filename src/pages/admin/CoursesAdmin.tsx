@@ -43,14 +43,14 @@ export function CoursesAdmin() {
               style={{
                 padding: '10px 18px',
                 background: active ? 'rgba(212,175,55,0.12)' : 'transparent',
-                border: `1px solid ${active ? 'var(--gold-300)' : 'var(--line-2)'}`,
-                color: active ? 'var(--gold-200)' : 'var(--text-1)',
+                border: `1px solid ${active ? 'var(--accent-700)' : 'var(--line-2)'}`,
+                color: active ? 'var(--accent-700)' : '#334155',
                 borderRadius: 999,
                 cursor: 'pointer',
                 fontSize: '0.86rem',
               }}
             >
-              {t.l} <span style={{ color: 'var(--text-3)', marginLeft: 6 }}>({count})</span>
+              {t.l} <span style={{ color: '#64748b', marginLeft: 6 }}>({count})</span>
             </button>
           )
         })}
@@ -58,7 +58,7 @@ export function CoursesAdmin() {
 
       {filtered.length === 0 ? (
         <div className="card" style={{ padding: 60, textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-2)', margin: 0 }}>해당 상태의 강의가 없습니다.</p>
+          <p style={{ color: '#475569', margin: 0 }}>해당 상태의 강의가 없습니다.</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -83,7 +83,7 @@ export function CoursesAdmin() {
                     </span>
                   </div>
                   <h3 style={{ margin: '4px 0', fontSize: '1.2rem' }}>{c.title}</h3>
-                  <div style={{ color: 'var(--text-2)', fontSize: '0.86rem' }}>
+                  <div style={{ color: '#475569', fontSize: '0.86rem' }}>
                     {c.instructor} · {c.duration_weeks}주 · 정원 {c.capacity}명
                   </div>
                 </div>

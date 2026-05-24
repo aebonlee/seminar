@@ -92,7 +92,7 @@ export function NewCourse() {
   return (
     <form onSubmit={submit} className="card" style={{ padding: 32 }}>
       <h3 style={{ marginTop: 0 }}>새 강의 등록</h3>
-      <p style={{ color: 'var(--text-2)', fontSize: '0.88rem' }}>
+      <p style={{ color: '#475569', fontSize: '0.88rem' }}>
         등록 즉시 <strong>승인 대기(pending)</strong> 상태가 됩니다. 강의 관리 탭에서 개강 승인하세요.
       </p>
 
@@ -203,7 +203,7 @@ export function NewCourse() {
                   borderRadius: 6,
                   cursor: 'pointer',
                   fontSize: 13,
-                  color: 'var(--text)',
+                  color: '#0f172a',
                   transition: 'all 0.12s var(--ease)',
                 }}
               >
@@ -303,7 +303,7 @@ function Pill({ active, onClick, children }: { active: boolean; onClick: () => v
         fontSize: 12,
         fontWeight: 700,
         background: active ? 'var(--accent-600)' : 'transparent',
-        color: active ? '#fff' : 'var(--text-2)',
+        color: active ? '#fff' : '#475569',
         border: `1px solid ${active ? 'var(--accent-600)' : 'var(--border)'}`,
         borderRadius: 999,
         cursor: 'pointer',
