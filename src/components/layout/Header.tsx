@@ -5,7 +5,7 @@ import { Logo } from './Logo'
 const links = [
   { to: '/about', label: '소개' },
   { to: '/courses', label: '모집강의' },
-  { to: '/courses?cat=admission', label: '강사진' },
+  { to: '/network', label: 'DreamIT 사이트' },
   { to: '/mypage', label: '학습안내' },
   { to: '/about#news', label: '공지사항' },
 ]

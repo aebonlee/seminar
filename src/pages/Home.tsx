@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useData } from '../contexts/DataContext'
+import { familySites, siteCategories } from '../data/familySites'
 import type { Course } from '../types'
 
 const fmtPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
@@ -250,6 +251,9 @@ export function Home() {
             </BentoCard>
           )}
         </div>
+
+        {/* ============ DreamIT Network — Family Sites ============ */}
+        <FamilyNetwork />
       </div>
 
       <style>{`
@@ -297,6 +301,111 @@ export function Home() {
           .bento-1x2 { grid-column: span 1; grid-row: span 1; }
         }
       `}</style>
+    </section>
+  )
+}
+
+// ================== Family Network Section ==================
+function FamilyNetwork() {
+  const total = familySites.length
+  // 카테고리당 1~2개 대표 사이트 미리 뽑기
+  const featured: Record<string, ReturnType<typeof familySites.filter>> = {}
+  siteCategories.forEach((c) => {
+    featured[c.id] = familySites.filter((s) => s.category === c.id).slice(0, 2)
+  })
+
+  return (
+    <section
+      style={{ marginTop: 56, color: '#fff' }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: 22, flexWrap: 'wrap', gap: 12 }}>
+        <div>
+          <div style={{ fontSize: 11, letterSpacing: '0.24em', color: '#fcd34d', fontWeight: 800 }}>
+            DREAMIT NETWORK
+          </div>
+          <h2 style={{ margin: '8px 0 0', fontSize: 'clamp(1.5rem, 2.6vw, 2rem)', fontWeight: 800, color: '#fff' }}>
+            {total}개 교육·서비스 플랫폼
+          </h2>
+          <p style={{ marginTop: 6, color: 'rgba(255,255,255,0.75)', fontSize: 14 }}>
+            세미나 외에도 AI · 코딩 · 자격증 · 경영 등 14개 카테고리의 학습 사이트를 운영합니다.
+          </p>
+        </div>
+        <Link
+          to="/network"
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 8,
+            padding: '11px 18px',
+            border: '1px solid rgba(255,255,255,0.4)',
+            color: '#fff',
+            textDecoration: 'none',
+            fontWeight: 700,
+            fontSize: 14,
+            background: 'rgba(255,255,255,0.06)',
+          }}
+        >
+          전체 사이트 둘러보기
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden>
+            <path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+          </svg>
+        </Link>
+      </div>
+
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: 12,
+        }}
+      >
+        {siteCategories.map((c) => {
+          const list = featured[c.id]
+          return (
+            <Link
+              key={c.id}
+              to="/network"
+              state={{ category: c.id }}
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                padding: 20,
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid rgba(255,255,255,0.1)',
+                color: '#fff',
+                textDecoration: 'none',
+                backdropFilter: 'blur(6px)',
+                WebkitBackdropFilter: 'blur(6px)',
+                borderRadius: 10,
+                transition: 'all 0.18s var(--ease)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(252,211,77,0.5)'
+                e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
+                e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
+                <span style={{ fontSize: 20 }} aria-hidden>{c.icon}</span>
+                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#fff' }}>{c.nameKo}</h4>
+                <span style={{ color: '#fcd34d', fontSize: 12, fontWeight: 800, marginLeft: 'auto' }}>{c.count}</span>
+              </div>
+              {list.length > 0 && (
+                <ul style={{ listStyle: 'none', padding: 0, marginTop: 12, marginBottom: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                  {list.map((s) => (
+                    <li key={s.id} style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      · {s.nameKo}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Link>
+          )
+        })}
+      </div>
     </section>
   )
 }

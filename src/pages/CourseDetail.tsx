@@ -1,8 +1,9 @@
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useData } from '../contexts/DataContext'
+import { SubPage, SubPanel, PanelHeroBanner } from '../components/layout/SubPage'
 
-const formatPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
-const formatDate = (iso: string | null) =>
+const fmtPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
+const fmtDate = (iso: string | null) =>
   iso ? new Date(iso).toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : 'TBA'
 
 export function CourseDetail() {
@@ -13,157 +14,181 @@ export function CourseDetail() {
 
   if (!course) {
     return (
-      <section className="section">
-        <div className="container-narrow text-center">
-          <h2>강의를 찾을 수 없습니다.</h2>
-          <Link to="/courses" className="btn btn-outline mt-3">강의 목록으로</Link>
-        </div>
-      </section>
+      <SubPage title="강의를 찾을 수 없습니다" breadcrumb={[{ label: '모집 강의', to: '/courses' }, { label: '없음' }]}>
+        <SubPanel>
+          <p style={{ textAlign: 'center', color: '#64748b' }}>요청하신 강의를 찾을 수 없습니다.</p>
+          <div style={{ textAlign: 'center', marginTop: 16 }}>
+            <Link to="/courses" className="btn btn-primary">강의 목록</Link>
+          </div>
+        </SubPanel>
+      </SubPage>
     )
   }
 
   if (course.status !== 'approved') {
     return (
-      <section className="section">
-        <div className="container-narrow text-center">
-          <span className="badge badge-pending">관리자 승인 대기 중</span>
-          <h2 style={{ marginTop: 24 }}>{course.title}</h2>
-          <p style={{ color: 'var(--text-2)' }}>
-            현재 이 강의는 관리자 검토 단계에 있어 일반에 공개되지 않습니다.
-          </p>
-        </div>
-      </section>
+      <SubPage title={course.title} breadcrumb={[{ label: '모집 강의', to: '/courses' }, { label: '검토 중' }]}>
+        <SubPanel>
+          <div style={{ textAlign: 'center', color: '#64748b' }}>
+            <span className="badge badge-pending" style={{ background: '#fef3c7', color: '#92400e', border: '1px solid #fcd34d' }}>관리자 검토 중</span>
+            <p style={{ marginTop: 16 }}>현재 이 강의는 관리자 검토 단계로 일반에 공개되지 않습니다.</p>
+          </div>
+        </SubPanel>
+      </SubPage>
     )
   }
 
   return (
-    <>
-      {/* HERO */}
-      <section style={{ position: 'relative', padding: '80px 0 60px' }}>
-        <div className="container">
-          <Link to="/courses" style={{ fontSize: '0.82rem', letterSpacing: '0.14em', textTransform: 'uppercase' }}>
-            ← Courses
-          </Link>
+    <SubPage
+      title={course.title}
+      breadcrumb={[
+        { label: '모집 강의', to: '/courses' },
+        { label: course.category },
+      ]}
+    >
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1.55fr) minmax(0, 1fr)', gap: 24 }} className="detail-grid">
+        {/* Left: detail */}
+        <SubPanel
+          topImage={
+            <PanelHeroBanner>
+              <div style={{ fontSize: 12, fontWeight: 800, letterSpacing: '0.18em', color: '#fcd34d' }}>
+                {course.category}
+              </div>
+              <h2 style={{ marginTop: 8, fontSize: '1.55rem', lineHeight: 1.3, fontWeight: 800 }}>
+                {course.subtitle || course.title}
+              </h2>
+            </PanelHeroBanner>
+          }
+        >
+          <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-700)' }}>강의 소개</h3>
+          <p style={{ marginTop: 12, lineHeight: 1.85, color: '#334155' }}>{course.description}</p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 1fr', gap: 60, marginTop: 32, alignItems: 'start' }} className="course-grid">
-            <div>
-              <span className="badge badge-gold">{course.category}</span>
-              <h1 style={{ marginTop: 16 }}>{course.title}</h1>
-              {course.subtitle && (
-                <p style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', color: 'var(--text-1)', fontSize: '1.3rem' }}>
-                  {course.subtitle}
-                </p>
-              )}
-              <p style={{ color: 'var(--text-1)', marginTop: 20, lineHeight: 1.85 }}>{course.description}</p>
+          {course.highlights.length > 0 && (
+            <>
+              <h3 style={{ marginTop: 36, marginBottom: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-700)' }}>
+                프로그램 하이라이트
+              </h3>
+              <ul style={{ listStyle: 'none', padding: 0, margin: '14px 0 0', display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {course.highlights.map((h, i) => (
+                  <li
+                    key={i}
+                    style={{
+                      display: 'flex',
+                      gap: 12,
+                      padding: '14px 16px',
+                      background: '#fff',
+                      borderLeft: '3px solid var(--accent-500)',
+                      color: '#0f172a',
+                    }}
+                  >
+                    <span style={{ color: 'var(--accent-600)', fontWeight: 800 }}>◆</span>
+                    <span>{h}</span>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
 
-              {course.highlights.length > 0 && (
-                <div style={{ marginTop: 32 }}>
-                  <h3 style={{ fontSize: '1.1rem', color: 'var(--gold-200)', letterSpacing: '0.05em' }}>프로그램 하이라이트</h3>
-                  <ul style={{ listStyle: 'none', padding: 0, margin: '16px 0 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {course.highlights.map((h, i) => (
-                      <li key={i} style={{ display: 'flex', gap: 14, alignItems: 'start' }}>
-                        <span style={{ color: 'var(--gold-300)', marginTop: 4 }}>◆</span>
-                        <span>{h}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+          {course.curriculum.length > 0 && (
+            <>
+              <h3 style={{ marginTop: 36, marginBottom: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-700)' }}>
+                커리큘럼
+              </h3>
+              <ol style={{ listStyle: 'none', padding: 0, margin: '14px 0 0', display: 'flex', flexDirection: 'column', gap: 0 }}>
+                {course.curriculum.map((w) => (
+                  <li
+                    key={w.week}
+                    style={{
+                      display: 'flex',
+                      gap: 24,
+                      padding: '18px 16px',
+                      borderBottom: '1px solid #e2e8f0',
+                      background: '#fff',
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: '1.4rem',
+                        fontWeight: 800,
+                        color: 'var(--accent-600)',
+                        minWidth: 60,
+                        lineHeight: 1,
+                      }}
+                    >
+                      WK {String(w.week).padStart(2, '0')}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <div style={{ fontWeight: 800, color: '#0f172a' }}>{w.title}</div>
+                      <div style={{ marginTop: 4, color: '#64748b', fontSize: 14 }}>{w.topics.join(' · ')}</div>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            </>
+          )}
+        </SubPanel>
 
-              {course.curriculum.length > 0 && (
-                <div style={{ marginTop: 48 }}>
-                  <h3 style={{ fontSize: '1.1rem', color: 'var(--gold-200)', letterSpacing: '0.05em' }}>커리큘럼</h3>
-                  <div style={{ marginTop: 20, display: 'flex', flexDirection: 'column', gap: 12 }}>
-                    {course.curriculum.map((w) => (
-                      <div
-                        key={w.week}
-                        className="card"
-                        style={{ padding: 22, display: 'flex', gap: 24, alignItems: 'start' }}
-                      >
-                        <div
-                          style={{
-                            fontFamily: 'var(--font-display)',
-                            fontSize: '2rem',
-                            color: 'var(--gold-300)',
-                            lineHeight: 1,
-                            minWidth: 64,
-                          }}
-                        >
-                          {String(w.week).padStart(2, '0')}
-                        </div>
-                        <div style={{ flex: 1 }}>
-                          <div style={{ color: 'var(--text-0)', fontWeight: 600 }}>{w.title}</div>
-                          <div style={{ color: 'var(--text-2)', fontSize: '0.88rem', marginTop: 6 }}>
-                            {w.topics.join(' · ')}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+        {/* Right: sidebar */}
+        <SubPanel padded={false}>
+          <div style={{ padding: 28, background: '#fff' }}>
+            <div style={{ fontSize: 11, fontWeight: 800, letterSpacing: '0.16em', color: 'var(--accent-600)' }}>
+              수강료
+            </div>
+            <div style={{ marginTop: 4, fontSize: '2rem', fontWeight: 800, color: 'var(--accent-700)', letterSpacing: '-0.01em' }}>
+              {fmtPrice(course.price)}
+            </div>
+
+            <div
+              style={{
+                marginTop: 20,
+                paddingTop: 18,
+                borderTop: '1px solid #e2e8f0',
+                display: 'flex',
+                flexDirection: 'column',
+                gap: 12,
+              }}
+            >
+              <KV k="기간" v={`${course.duration_weeks}주 · 총 ${course.sessions}회`} />
+              <KV k="개강" v={fmtDate(course.start_date)} />
+              <KV k="종강" v={fmtDate(course.end_date)} />
+              <KV k="정원" v={`${course.capacity}명`} />
+              <KV k="강사" v={course.instructor} />
+              {course.instructor_bio && (
+                <div style={{ color: '#64748b', fontSize: 13, fontStyle: 'italic', marginTop: 4 }}>
+                  {course.instructor_bio}
                 </div>
               )}
             </div>
 
-            <aside
-              className="card"
-              style={{
-                padding: 32,
-                position: 'sticky',
-                top: 104,
-                borderColor: 'var(--line-1)',
-                background:
-                  'linear-gradient(180deg, rgba(212,175,55,0.04) 0%, var(--bg-2) 100%)',
-              }}
+            <button
+              className="btn btn-primary"
+              style={{ width: '100%', marginTop: 24 }}
+              onClick={() => navigate(`/apply?course=${course.id}`)}
             >
-              <div style={{ fontSize: '0.72rem', letterSpacing: '0.18em', color: 'var(--gold-300)', textTransform: 'uppercase' }}>
-                Tuition
-              </div>
-              <div className="gold-text" style={{ fontFamily: 'var(--font-display)', fontSize: '2.6rem', fontWeight: 600, marginTop: 4 }}>
-                {formatPrice(course.price)}
-              </div>
-
-              <div style={{ marginTop: 28, display: 'flex', flexDirection: 'column', gap: 16, paddingTop: 24, borderTop: '1px solid var(--line-2)' }}>
-                <Detail k="기간" v={`${course.duration_weeks}주 · 총 ${course.sessions}회`} />
-                <Detail k="개강" v={formatDate(course.start_date)} />
-                <Detail k="종강" v={formatDate(course.end_date)} />
-                <Detail k="정원" v={`${course.capacity}명`} />
-                <Detail k="강사" v={course.instructor} />
-                {course.instructor_bio && (
-                  <div style={{ color: 'var(--text-2)', fontSize: '0.82rem', fontStyle: 'italic' }}>
-                    {course.instructor_bio}
-                  </div>
-                )}
-              </div>
-
-              <button
-                className="btn btn-primary"
-                style={{ width: '100%', marginTop: 28 }}
-                onClick={() => navigate(`/apply?course=${course.id}`)}
-              >
-                수강 신청하기
-              </button>
-              <p className="form-help" style={{ marginTop: 12, textAlign: 'center' }}>
-                관리자 검토 후 개강 확정 시 이메일로 안내됩니다.
-              </p>
-            </aside>
+              수강 신청하기
+            </button>
+            <p style={{ marginTop: 12, textAlign: 'center', fontSize: 12, color: '#64748b' }}>
+              관리자 검토 후 개강 확정 시 이메일로 안내됩니다.
+            </p>
           </div>
-        </div>
+        </SubPanel>
+      </div>
 
-        <style>{`
-          @media (max-width: 880px) {
-            .course-grid { grid-template-columns: 1fr !important; }
-          }
-        `}</style>
-      </section>
-    </>
+      <style>{`
+        @media (max-width: 960px) {
+          .detail-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </SubPage>
   )
 }
 
-function Detail({ k, v }: { k: string; v: string }) {
+function KV({ k, v }: { k: string; v: string }) {
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <span style={{ color: 'var(--text-3)', fontSize: '0.74rem', textTransform: 'uppercase', letterSpacing: '0.14em' }}>{k}</span>
-      <span style={{ color: 'var(--text-0)', fontWeight: 500, fontSize: '0.92rem' }}>{v}</span>
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+      <span style={{ fontSize: 11, fontWeight: 700, color: '#94a3b8', letterSpacing: '0.1em' }}>{k}</span>
+      <span style={{ fontSize: 14, fontWeight: 700, color: '#0f172a' }}>{v}</span>
     </div>
   )
 }

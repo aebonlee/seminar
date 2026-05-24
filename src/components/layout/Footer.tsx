@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { COMPANY, siteCategories } from '../../data/familySites'
 
 export function Footer() {
   return (
@@ -10,7 +11,6 @@ export function Footer() {
         paddingBottom: 36,
         paddingLeft: 16,
         paddingRight: 16,
-        marginTop: 0,
       }}
     >
       <div
@@ -44,8 +44,8 @@ export function Footer() {
               { l: '개인정보처리방침', to: '/about', highlight: true },
               { l: '이메일 무단수집 거부', to: '/about' },
               { l: '이용약관', to: '/about' },
-              { l: '교내 전화번호', to: '/about' },
               { l: '사이트맵', to: '/about' },
+              { l: '강사 지원', to: '/about' },
             ].map((s) => (
               <li key={s.l}>
                 <Link
@@ -62,6 +62,34 @@ export function Footer() {
               </li>
             ))}
           </ul>
+
+          {/* Family Site dropdown-style link */}
+          <div style={{ marginTop: 24 }}>
+            <div style={{ fontSize: 11, color: '#9ca3af', letterSpacing: '0.16em', fontWeight: 800, marginBottom: 10 }}>
+              FAMILY SITES
+            </div>
+            <a
+              href={COMPANY.portalSite.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '10px 16px',
+                border: '1px solid rgba(255,255,255,0.2)',
+                color: '#fff',
+                textDecoration: 'none',
+                fontSize: 13,
+                fontWeight: 700,
+              }}
+            >
+              {COMPANY.portalSite.name} · 전체 {siteCategories.reduce((a, c) => a + c.count, 0)}개 사이트
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden>
+                <path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </a>
+          </div>
         </div>
 
         {/* Contact */}
@@ -75,44 +103,76 @@ export function Footer() {
           }}
         >
           <div>
-            <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 6 }}>수강 관련 문의</div>
+            <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 6 }}>수강 · 입학 관련 문의</div>
             <div style={{ color: '#fff', fontSize: '1.55rem', fontWeight: 800 }}>
-              <a href="tel:02-0000-0000" style={{ color: '#fff', textDecoration: 'none' }}>02-0000-0000</a>
+              <a href={`tel:${COMPANY.phone}`} style={{ color: '#fff', textDecoration: 'none' }}>{COMPANY.phone}</a>
             </div>
-            <p style={{ marginTop: 8, fontSize: 12, lineHeight: 1.6 }}>
-              평일 09:00–22:00<br />
-              주말·공휴일 09:00–18:00
-            </p>
+            <p style={{ marginTop: 8, fontSize: 12, lineHeight: 1.6 }}>{COMPANY.businessHours}</p>
+            <p style={{ marginTop: 6, fontSize: 12 }}>카카오톡 ID: <span style={{ color: '#fff', fontWeight: 700 }}>{COMPANY.kakao}</span></p>
           </div>
           <div>
-            <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 6 }}>대표번호</div>
-            <div style={{ color: '#fff', fontSize: '1.55rem', fontWeight: 800 }}>
-              <a href="tel:02-0000-0000" style={{ color: '#fff', textDecoration: 'none' }}>02-0000-0000</a>
+            <div style={{ fontSize: 13, color: '#9ca3af', marginBottom: 6 }}>이메일</div>
+            <div style={{ color: '#fff', fontSize: '1.15rem', fontWeight: 800 }}>
+              <a href={`mailto:${COMPANY.email}`} style={{ color: '#fff', textDecoration: 'none' }}>{COMPANY.email}</a>
             </div>
+            <a
+              href={COMPANY.parentSite.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: 'inline-block',
+                marginTop: 18,
+                fontSize: 13,
+                color: '#fcd34d',
+                fontWeight: 700,
+                textDecoration: 'none',
+              }}
+            >
+              ↗ {COMPANY.parentSite.name} 본사이트
+            </a>
           </div>
         </div>
 
-        {/* Support box */}
-        <div>
+        {/* Support / quick action */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
           <a
-            href="#"
+            href={`mailto:${COMPANY.email}?subject=강의%20문의`}
             style={{
               display: 'inline-flex',
               alignItems: 'center',
+              justifyContent: 'center',
               gap: 8,
-              padding: '12px 20px',
-              background: '#831843',
+              padding: '14px 20px',
+              background: 'var(--accent-700)',
               color: '#fff',
               fontWeight: 800,
               fontSize: '0.92rem',
-              borderRadius: 6,
               textDecoration: 'none',
             }}
           >
-            원격지원 연결하기
+            메일로 문의하기
             <svg width="12" height="12" viewBox="0 0 16 16" fill="none" aria-hidden>
               <path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
             </svg>
+          </a>
+          <a
+            href={`https://qr.kakao.com/talk/${COMPANY.kakao}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: 8,
+              padding: '14px 20px',
+              background: '#FEE500',
+              color: '#181600',
+              fontWeight: 800,
+              fontSize: '0.92rem',
+              textDecoration: 'none',
+            }}
+          >
+            카카오톡 상담
           </a>
         </div>
       </div>
@@ -140,9 +200,9 @@ export function Footer() {
             <path d="M10 9 L10 23 L17 23 C21.4 23 24 20.1 24 16 C24 11.9 21.4 9 17 9 Z" fill="var(--accent-700)" />
           </svg>
           <div>
-            (00000) 서울특별시 강남구 테헤란로 — DreamIT Biz · 대표 : 홍길동<br />
-            등록번호 : 000-00-00000 · 통신판매업신고번호 : 제0000-서울강남-0000호<br />
-            TEL : 02) 0000-0000 · FAX : 02) 0000-0000 · E-mail : contact@dreamitbiz.com
+            {COMPANY.address} · {COMPANY.name} · 대표 : {COMPANY.ceo}<br />
+            등록번호 : {COMPANY.bizNumber} · 통신판매업신고번호 : {COMPANY.salesNumber}<br />
+            출판신고번호 : {COMPANY.publisherNumber} · TEL : {COMPANY.phone} · E-mail : {COMPANY.email}
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
@@ -151,6 +211,9 @@ export function Footer() {
           </span>
           <span style={{ fontSize: 11, padding: '6px 10px', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 700 }}>
             ISO 27001
+          </span>
+          <span style={{ fontSize: 11, padding: '6px 10px', border: '1px solid rgba(255,255,255,0.2)', color: '#fff', fontWeight: 700 }}>
+            웹접근성
           </span>
         </div>
       </div>
@@ -165,7 +228,7 @@ export function Footer() {
           color: '#6b7280',
         }}
       >
-        © {new Date().getFullYear()} DreamIT Biz. All rights reserved.
+        © {new Date().getFullYear()} {COMPANY.name}. All rights reserved.
       </div>
 
       <style>{`
