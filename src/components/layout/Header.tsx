@@ -1,13 +1,14 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Logo } from './Logo'
+import { ThemeToggle, ColorPicker } from './ThemeToggle'
 import { useAuth } from '../../contexts/AuthContext'
 
 const links = [
-  { to: '/', label: 'Home' },
-  { to: '/courses', label: 'Courses' },
-  { to: '/about', label: 'About' },
-  { to: '/apply', label: 'Apply' },
+  { to: '/', label: '홈' },
+  { to: '/courses', label: '모집 강의' },
+  { to: '/about', label: '소개' },
+  { to: '/apply', label: '신청' },
 ]
 
 export function Header() {
@@ -17,7 +18,7 @@ export function Header() {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 20)
+    const onScroll = () => setScrolled(window.scrollY > 16)
     onScroll()
     window.addEventListener('scroll', onScroll, { passive: true })
     return () => window.removeEventListener('scroll', onScroll)
@@ -36,9 +37,10 @@ export function Header() {
         zIndex: 50,
         height: 'var(--nav-h)',
         backdropFilter: 'blur(14px)',
-        background: scrolled ? 'rgba(7, 7, 10, 0.85)' : 'rgba(7, 7, 10, 0.45)',
-        borderBottom: scrolled ? '1px solid var(--line-1)' : '1px solid transparent',
-        transition: 'all 0.3s var(--ease)',
+        WebkitBackdropFilter: 'blur(14px)',
+        background: scrolled ? 'var(--header-bg)' : 'transparent',
+        borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
+        transition: 'background 0.25s var(--ease), border-color 0.25s var(--ease)',
       }}
     >
       <div
@@ -48,18 +50,15 @@ export function Header() {
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
+          gap: 20,
         }}
       >
         <Logo />
 
         <nav
           aria-label="primary"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 36,
-          }}
           className="primary-nav"
+          style={{ display: 'flex', alignItems: 'center', gap: 32 }}
         >
           {links.map((l) => (
             <NavLink
@@ -67,13 +66,12 @@ export function Header() {
               to={l.to}
               end={l.to === '/'}
               style={({ isActive }) => ({
-                color: isActive ? 'var(--gold-200)' : 'var(--text-1)',
-                fontSize: '0.85rem',
-                fontWeight: 500,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                position: 'relative',
+                color: isActive ? 'var(--accent-600)' : 'var(--text-2)',
+                fontSize: '0.92rem',
+                fontWeight: 700,
                 padding: '6px 0',
+                position: 'relative',
+                transition: 'color 0.18s var(--ease)',
               })}
             >
               {l.label}
@@ -81,19 +79,24 @@ export function Header() {
           ))}
         </nav>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <ThemeToggle />
+          <ColorPicker />
+
+          <div style={{ width: 1, height: 24, background: 'var(--border)', margin: '0 4px' }} />
+
           {user ? (
             <>
               {isAdmin && (
                 <NavLink to="/admin" className="btn btn-ghost btn-sm">
-                  Admin
+                  관리자
                 </NavLink>
               )}
               <NavLink to="/mypage" className="btn btn-ghost btn-sm">
-                {user.full_name || '내 페이지'}
+                {user.full_name || '내 정보'}
               </NavLink>
               <button className="btn btn-outline btn-sm" onClick={handleSignOut}>
-                Sign out
+                로그아웃
               </button>
             </>
           ) : (
@@ -106,20 +109,29 @@ export function Header() {
               </NavLink>
             </>
           )}
+
           <button
             className="hamburger"
             aria-label="메뉴 열기"
             onClick={() => setOpen((v) => !v)}
             style={{
               display: 'none',
+              width: 38,
+              height: 38,
+              alignItems: 'center',
+              justifyContent: 'center',
               background: 'transparent',
-              border: '1px solid var(--line-1)',
-              color: 'var(--text-0)',
-              padding: 10,
+              border: '1px solid var(--border)',
+              color: 'var(--text)',
               borderRadius: 'var(--r-md)',
+              cursor: 'pointer',
             }}
           >
-            ☰
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" aria-hidden>
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
           </button>
         </div>
       </div>
@@ -128,9 +140,9 @@ export function Header() {
         <div
           className="mobile-menu"
           style={{
-            background: 'var(--bg-2)',
-            borderBottom: '1px solid var(--line-1)',
-            padding: '20px 24px',
+            background: 'var(--surface)',
+            borderBottom: '1px solid var(--border)',
+            padding: '18px 20px',
           }}
         >
           {links.map((l) => (
@@ -142,8 +154,9 @@ export function Header() {
               style={{
                 display: 'block',
                 padding: '12px 0',
-                color: 'var(--text-0)',
-                borderBottom: '1px solid var(--line-2)',
+                color: 'var(--text)',
+                fontWeight: 600,
+                borderBottom: '1px solid var(--border-2)',
               }}
             >
               {l.label}
@@ -155,7 +168,7 @@ export function Header() {
       <style>{`
         @media (max-width: 880px) {
           .primary-nav { display: none !important; }
-          .hamburger { display: inline-flex !important; }
+          .hamburger   { display: inline-flex !important; }
         }
       `}</style>
     </header>
