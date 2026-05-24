@@ -53,10 +53,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
       return
     }
     const [{ data: cs }, { data: apps }] = await Promise.all([
-      supabase.from('courses').select('*').order('created_at', { ascending: false }),
+      supabase.from('seminar_courses').select('*').order('created_at', { ascending: false }),
       supabase
-        .from('applications')
-        .select('*, course:courses(*)')
+        .from('seminar_applications')
+        .select('*, course:seminar_courses(*)')
         .order('created_at', { ascending: false }),
     ])
     setCourses((cs as Course[] | null) ?? [])
@@ -91,7 +91,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         saveLS(LS_APPS, updated)
         return
       }
-      const { error } = await supabase.from('applications').insert({
+      const { error } = await supabase.from('seminar_applications').insert({
         course_id: course.id,
         user_id: user?.id ?? null,
         name: payload.name,
@@ -125,7 +125,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         return
       }
       const { error } = await supabase
-        .from('applications')
+        .from('seminar_applications')
         .update({
           status,
           admin_note: note ?? null,
@@ -155,7 +155,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         return
       }
       const { error } = await supabase
-        .from('courses')
+        .from('seminar_courses')
         .update({
           status,
           approved_at: status === 'approved' ? new Date().toISOString() : null,
@@ -182,7 +182,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         saveLS(LS_COURSES, updated)
         return
       }
-      const { error } = await supabase.from('courses').insert({ ...input, status: 'pending' })
+      const { error } = await supabase.from('seminar_courses').insert({ ...input, status: 'pending' })
       if (error) throw error
       await refresh()
     },

@@ -2,12 +2,15 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { isSupabaseConfigured, supabase } from '../lib/supabase'
 import type { Profile, UserRole } from '../types'
 
+export type OAuthProvider = 'google' | 'kakao'
+
 interface AuthApi {
   loading: boolean
   user: Profile | null
   signIn: (email: string, password: string) => Promise<void>
   signUp: (email: string, password: string, name: string) => Promise<void>
   signOut: () => Promise<void>
+  signInWithOAuth: (provider: OAuthProvider) => Promise<void>
   isAdmin: boolean
   mockLoginAs: (role: UserRole) => void
   backendReady: boolean
@@ -49,7 +52,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const sUser = data.session?.user
       if (sUser) {
         const { data: profile } = await sb
-          .from('profiles')
+          .from('seminar_profiles')
           .select('*')
           .eq('id', sUser.id)
           .maybeSingle()
@@ -73,7 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return
       }
       const { data: profile } = await sb
-        .from('profiles')
+        .from('seminar_profiles')
         .select('*')
         .eq('id', sUser.id)
         .maybeSingle()
@@ -132,13 +135,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     })
     if (error) throw error
     if (data.user) {
-      await supabase.from('profiles').upsert({
+      await supabase.from('seminar_profiles').upsert({
         id: data.user.id,
         email,
         full_name: name,
         role: ADMIN_EMAILS.includes(email.toLowerCase()) ? 'admin' : 'user',
       })
     }
+  }, [])
+
+  const signInWithOAuth = useCallback(async (provider: OAuthProvider) => {
+    if (!supabase) {
+      throw new Error('OAuth 로그인은 Supabase 설정 후 사용 가능합니다.')
+    }
+    const redirectTo =
+      (import.meta.env.VITE_SITE_URL as string | undefined)?.replace(/\/$/, '') + '/mypage' ||
+      window.location.origin + '/mypage'
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider,
+      options: { redirectTo },
+    })
+    if (error) throw error
   }, [])
 
   const signOut = useCallback(async () => {
@@ -170,6 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     signIn,
     signUp,
     signOut,
+    signInWithOAuth,
     isAdmin: user?.role === 'admin',
     mockLoginAs,
     backendReady: isSupabaseConfigured,
