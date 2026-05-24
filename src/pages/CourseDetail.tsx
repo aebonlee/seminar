@@ -127,6 +127,43 @@ export function CourseDetail() {
               </ol>
             </>
           )}
+
+          {course.learning_sites.length > 0 && (
+            <>
+              <h3 style={{ marginTop: 36, marginBottom: 0, fontSize: '1.1rem', fontWeight: 800, color: 'var(--accent-700)' }}>
+                제공 학습 사이트 ({course.learning_sites.length}개)
+              </h3>
+              <p style={{ marginTop: 10, marginBottom: 14, color: '#64748b', fontSize: 13 }}>
+                수강 신청이 승인되면 마이페이지에서 아래 학습 사이트에 접근할 수 있습니다.
+                URL은 보안·운영 정책상 신청 승인 전에는 공개되지 않습니다.
+              </p>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {course.learning_sites.map((s) => (
+                  <li
+                    key={s.id}
+                    style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 8,
+                      padding: '8px 14px',
+                      background: 'var(--accent-50)',
+                      border: '1px solid var(--accent-200)',
+                      color: 'var(--accent-900)',
+                      fontSize: 13,
+                      fontWeight: 700,
+                    }}
+                    title={s.description}
+                  >
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+                      <rect x="3" y="11" width="18" height="11" rx="2" />
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                    </svg>
+                    {s.name}
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </SubPanel>
 
         {/* Right: sidebar */}

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { useData } from '../contexts/DataContext'
-import { familySites, siteCategories } from '../data/familySites'
+import { familySites, siteCategories } from '../data/familySites' // familySites는 total count 표시용
 import type { Course } from '../types'
 
 const fmtPrice = (n: number) => n.toLocaleString('ko-KR') + '원'
@@ -135,17 +135,17 @@ export function Home() {
       >
         <div className="bento">
           {/* 1. Slogan / featured slider (2x2) */}
-          <BentoCard tone="dark" size="2x2">
+          <BentoCard tone="hero" size="2x2">
             <SloganSlider courses={approved.slice(0, 4)} />
           </BentoCard>
 
           {/* 2. 공지사항 (2x1) */}
-          <BentoCard tone="white" size="2x1">
+          <BentoCard tone="neutral" size="2x1">
             <NoticeCard />
           </BentoCard>
 
           {/* 3. 학사안내 (1x1 icon) */}
-          <BentoCard tone="mustard" size="1x1">
+          <BentoCard tone="strong" size="1x1">
             <IconCard
               eyebrow="학사안내"
               title="강의 안내"
@@ -155,7 +155,7 @@ export function Home() {
           </BentoCard>
 
           {/* 4. 증명서 (1x1 icon) */}
-          <BentoCard tone="fuchsia" size="1x1">
+          <BentoCard tone="mid" size="1x1">
             <IconCard
               eyebrow="수료증 발급"
               title="24h 발급센터"
@@ -165,32 +165,32 @@ export function Home() {
           </BentoCard>
 
           {/* 5. Featured premier program (2x1) — like 최고경영자과정 */}
-          <BentoCard tone="pink" size="2x1">
+          <BentoCard tone="dark" size="2x1">
             {featured ? <PremierCard course={featured} /> : <Empty />}
           </BentoCard>
 
           {/* 6. 일반 강의 카드 (1x1) */}
-          <BentoCard tone="fuchsia" size="1x1">
+          <BentoCard tone="mid" size="1x1">
             <IconCard eyebrow="개설 강의" title="Executive" icon="🏛" to="/courses?cat=Executive" />
           </BentoCard>
 
           {/* 7. 비즈 강의 카드 (1x1) */}
-          <BentoCard tone="purple" size="1x1">
+          <BentoCard tone="soft" size="1x1">
             <IconCard eyebrow="개설 강의" title="Data Studio" icon="📊" to="/courses?cat=Data" />
           </BentoCard>
 
           {/* 8. 학교/학과/전공 행사 (2x1) */}
-          <BentoCard tone="white" size="2x1">
+          <BentoCard tone="neutral" size="2x1">
             <ListCard title="세미나 · 워크숍" items={EVENTS} more="/courses" />
           </BentoCard>
 
           {/* 9. DreamIT News slider (2x1) */}
-          <BentoCard tone="purple" size="2x1">
+          <BentoCard tone="soft" size="2x1">
             <NewsSlider />
           </BentoCard>
 
           {/* 10. 이달의 학사일정 (2x1) */}
-          <BentoCard tone="white" size="2x1">
+          <BentoCard tone="neutral" size="2x1">
             <ListCard
               title="이달의 학사일정"
               items={SCHEDULE.map((s) => ({ tag: s.date, title: s.title }))}
@@ -200,53 +200,53 @@ export function Home() {
           </BentoCard>
 
           {/* 11. 우수 논문/후기 (2x1) — left/right text+thumb */}
-          <BentoCard tone="pink" size="2x1">
+          <BentoCard tone="dark" size="2x1">
             <PaperSlider />
           </BentoCard>
 
           {/* 12. 동아리/멘토링 (2x1) */}
-          <BentoCard tone="fuchsia" size="2x1">
+          <BentoCard tone="mid" size="2x1">
             <ClubSlider />
           </BentoCard>
 
           {/* 13. 학교자랑 / Pride stats (2x1) */}
-          <BentoCard tone="pink" size="2x1">
+          <BentoCard tone="dark" size="2x1">
             <PrideStats />
           </BentoCard>
 
           {/* 14. 어워드 (1x1) */}
-          <BentoCard tone="white" size="1x1">
+          <BentoCard tone="neutral" size="1x1">
             <IconCard eyebrow="" title="믿을 수 있는 어워드 수상이력" icon="🏆" to="/about" theme="light" />
           </BentoCard>
 
           {/* 15. 학생복지 (1x1) */}
-          <BentoCard tone="mustard" size="1x1">
+          <BentoCard tone="strong" size="1x1">
             <IconCard eyebrow="학생 지원" title="멘토십 · 네트워크" icon="🤝" to="/about" />
           </BentoCard>
 
           {/* 16. Brand 20th / 캠퍼스 (1x1) */}
-          <BentoCard tone="pink" size="1x1">
+          <BentoCard tone="dark" size="1x1">
             <BrandBadge />
           </BentoCard>
 
           {/* 17. YouTube (1x1) */}
-          <BentoCard tone="purple" size="1x1">
+          <BentoCard tone="soft" size="1x1">
             <IconCard eyebrow="" title="DreamIT TUBE" icon="▶" to="https://youtube.com" theme="dark" external />
           </BentoCard>
 
           {/* 18. VR/Virtual 캠퍼스 (1x1) */}
-          <BentoCard tone="white" size="1x1">
+          <BentoCard tone="neutral" size="1x1">
             <IconCard eyebrow="" title="VR 캠퍼스" icon="🥽" to="/about" theme="light" />
           </BentoCard>
 
           {/* Tail courses */}
           {otherCourses[0] && (
-            <BentoCard tone="purple" size="2x1">
+            <BentoCard tone="soft" size="2x1">
               <CourseTile course={otherCourses[0]} />
             </BentoCard>
           )}
           {otherCourses[1] && (
-            <BentoCard tone="pink" size="2x1">
+            <BentoCard tone="dark" size="2x1">
               <CourseTile course={otherCourses[1]} />
             </BentoCard>
           )}
@@ -305,47 +305,44 @@ export function Home() {
   )
 }
 
-// ================== Family Network Section ==================
+// ================== 학습 분야 (Fields) Section ==================
+// 정책: 100여 개 사이트를 무차별 공개하지 않습니다.
+// 운영 중인 학습 분야(카테고리) + 개수만 노출하고,
+// 실제 학습 사이트 URL은 강의 신청·승인 후 MyPage 에서 제공됩니다.
 function FamilyNetwork() {
   const total = familySites.length
-  // 카테고리당 1~2개 대표 사이트 미리 뽑기
-  const featured: Record<string, ReturnType<typeof familySites.filter>> = {}
-  siteCategories.forEach((c) => {
-    featured[c.id] = familySites.filter((s) => s.category === c.id).slice(0, 2)
-  })
-
   return (
-    <section
-      style={{ marginTop: 56, color: '#fff' }}
-    >
+    <section style={{ marginTop: 56, color: '#fff' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'end', marginBottom: 22, flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <div style={{ fontSize: 11, letterSpacing: '0.24em', color: '#fcd34d', fontWeight: 800 }}>
-            DREAMIT NETWORK
+          <div style={{ fontSize: 11, letterSpacing: '0.24em', color: 'var(--accent-300)', fontWeight: 800 }}>
+            LEARNING FIELDS
           </div>
           <h2 style={{ margin: '8px 0 0', fontSize: 'clamp(1.5rem, 2.6vw, 2rem)', fontWeight: 800, color: '#fff' }}>
-            {total}개 교육·서비스 플랫폼
+            DreamIT 운영 학습 분야
           </h2>
-          <p style={{ marginTop: 6, color: 'rgba(255,255,255,0.75)', fontSize: 14 }}>
-            세미나 외에도 AI · 코딩 · 자격증 · 경영 등 14개 카테고리의 학습 사이트를 운영합니다.
+          <p style={{ marginTop: 6, color: 'rgba(255,255,255,0.78)', fontSize: 14, maxWidth: 720 }}>
+            {siteCategories.length}개 분야 · 총 {total}개 학습 플랫폼을 운영합니다.
+            관심 분야의 강의를 신청해 승인되면, 해당 강의에 큐레이션된 학습 사이트가
+            마이페이지에서 함께 제공됩니다.
           </p>
         </div>
         <Link
-          to="/network"
+          to="/courses"
           style={{
             display: 'inline-flex',
             alignItems: 'center',
             gap: 8,
             padding: '11px 18px',
-            border: '1px solid rgba(255,255,255,0.4)',
+            background: 'var(--accent-600)',
             color: '#fff',
             textDecoration: 'none',
-            fontWeight: 700,
+            fontWeight: 800,
             fontSize: 14,
-            background: 'rgba(255,255,255,0.06)',
+            border: '1px solid var(--accent-600)',
           }}
         >
-          전체 사이트 둘러보기
+          모집 강의 보러가기
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden>
             <path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
           </svg>
@@ -355,57 +352,58 @@ function FamilyNetwork() {
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-          gap: 12,
+          gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+          gap: 10,
         }}
       >
-        {siteCategories.map((c) => {
-          const list = featured[c.id]
-          return (
-            <Link
-              key={c.id}
-              to="/network"
-              state={{ category: c.id }}
+        {siteCategories.map((c) => (
+          <div
+            key={c.id}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 12,
+              padding: '16px 18px',
+              background: 'rgba(255,255,255,0.05)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              color: '#fff',
+              backdropFilter: 'blur(6px)',
+              WebkitBackdropFilter: 'blur(6px)',
+              borderRadius: 10,
+            }}
+          >
+            <span style={{ fontSize: 22 }} aria-hidden>{c.icon}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: '0.92rem', fontWeight: 800, color: '#fff' }}>{c.nameKo}</div>
+              <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.6)', marginTop: 2 }}>{c.name}</div>
+            </div>
+            <div
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                padding: 20,
+                fontSize: 13,
+                fontWeight: 800,
+                color: 'var(--accent-300)',
                 background: 'rgba(255,255,255,0.05)',
-                border: '1px solid rgba(255,255,255,0.1)',
-                color: '#fff',
-                textDecoration: 'none',
-                backdropFilter: 'blur(6px)',
-                WebkitBackdropFilter: 'blur(6px)',
-                borderRadius: 10,
-                transition: 'all 0.18s var(--ease)',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(252,211,77,0.5)'
-                e.currentTarget.style.background = 'rgba(255,255,255,0.08)'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'
-                e.currentTarget.style.background = 'rgba(255,255,255,0.05)'
+                padding: '4px 10px',
+                borderRadius: 999,
+                border: '1px solid rgba(255,255,255,0.12)',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'baseline', gap: 8 }}>
-                <span style={{ fontSize: 20 }} aria-hidden>{c.icon}</span>
-                <h4 style={{ margin: 0, fontSize: '1rem', fontWeight: 800, color: '#fff' }}>{c.nameKo}</h4>
-                <span style={{ color: '#fcd34d', fontSize: 12, fontWeight: 800, marginLeft: 'auto' }}>{c.count}</span>
-              </div>
-              {list.length > 0 && (
-                <ul style={{ listStyle: 'none', padding: 0, marginTop: 12, marginBottom: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
-                  {list.map((s) => (
-                    <li key={s.id} style={{ fontSize: 12, color: 'rgba(255,255,255,0.8)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                      · {s.nameKo}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Link>
-          )
-        })}
+              {c.count}
+            </div>
+          </div>
+        ))}
       </div>
+
+      <p
+        style={{
+          marginTop: 18,
+          fontSize: 12,
+          color: 'rgba(255,255,255,0.55)',
+          textAlign: 'center',
+        }}
+      >
+        ⓘ 학습 사이트 접근 권한은 수강 승인 시 부여됩니다. 사이트 목록은 강의별로 다릅니다.
+      </p>
     </section>
   )
 }
@@ -416,22 +414,28 @@ function BentoCard({
   size,
   children,
 }: {
-  tone: 'dark' | 'white' | 'mustard' | 'fuchsia' | 'purple' | 'pink' | 'image'
+  /**
+   * 모든 톤이 현재 선택된 accent 컬러 스킴을 따릅니다.
+   *  - hero     : accent-900 (가장 진한 영웅 카드)
+   *  - strong   : accent-800
+   *  - mid      : accent-700
+   *  - soft     : accent-600
+   *  - light    : accent-50 라이트 톤 (라이트 모드) / accent-200 톤 (다크 모드)
+   *  - neutral  : 화이트 frost / 다크 표면
+   *  - dark     : 슬레이트 다크 (스킴 무관)
+   */
+  tone: 'hero' | 'strong' | 'mid' | 'soft' | 'light' | 'neutral' | 'dark'
   size: '2x2' | '2x1' | '1x2' | '1x1'
   children: React.ReactNode
 }) {
   const tones: Record<typeof tone, React.CSSProperties> = {
-    dark: { background: 'rgba(15, 23, 42, 0.78)', color: '#fff' },
-    image: {
-      background:
-        'linear-gradient(135deg, rgba(15,23,42,0.92), rgba(30,58,138,0.88))',
-      color: '#fff',
-    },
-    white: { background: 'rgba(255,255,255,0.92)', color: '#0f172a' },
-    mustard: { background: 'rgba(180, 132, 26, 0.85)', color: '#fff' },
-    fuchsia: { background: 'rgba(131, 24, 67, 0.82)', color: '#fff' },
-    purple: { background: 'rgba(91, 33, 182, 0.82)', color: '#fff' },
-    pink: { background: 'rgba(76, 5, 25, 0.82)', color: '#fff' },
+    hero:    { background: 'linear-gradient(135deg, var(--accent-900) 0%, var(--accent-800) 100%)', color: '#fff' },
+    strong:  { background: 'var(--accent-800)', color: '#fff' },
+    mid:     { background: 'var(--accent-700)', color: '#fff' },
+    soft:    { background: 'var(--accent-600)', color: '#fff' },
+    light:   { background: 'var(--tone-light)', color: 'var(--tone-light-fg)' },
+    neutral: { background: 'rgba(255,255,255,0.92)', color: '#0f172a' },
+    dark:    { background: 'rgba(15, 23, 42, 0.82)', color: '#fff' },
   }
   return (
     <div
@@ -443,7 +447,7 @@ function BentoCard({
         position: 'relative',
         backdropFilter: 'blur(10px)',
         WebkitBackdropFilter: 'blur(10px)',
-        border: tone === 'white' ? '1px solid rgba(15,23,42,0.06)' : '1px solid rgba(255,255,255,0.08)',
+        border: tone === 'neutral' ? '1px solid rgba(15,23,42,0.06)' : '1px solid rgba(255,255,255,0.08)',
         boxShadow: '0 10px 28px rgba(0,0,0,0.22)',
         animation: 'fadeSlide 0.5s var(--ease) both',
       }}

@@ -2,6 +2,21 @@ export type CourseStatus = 'draft' | 'pending' | 'approved' | 'rejected' | 'arch
 export type ApplicationStatus = 'pending' | 'approved' | 'rejected'
 export type UserRole = 'user' | 'admin'
 
+/**
+ * 학습 사이트 — 강의 신청 승인 시에만 사용자에게 URL이 공개됩니다.
+ * (familySites.ts 의 SiteInfo 와 호환되며, 강의별 큐레이션을 통해 매핑)
+ */
+export interface LearningSite {
+  /** familySites.ts 의 site id */
+  id: string
+  /** 사용자에게 노출할 한글 이름 */
+  name: string
+  /** 신청 승인된 사용자에게만 공개되는 URL */
+  url: string
+  /** 짧은 설명 (선택) */
+  description?: string
+}
+
 export interface Course {
   id: string
   title: string
@@ -21,6 +36,8 @@ export interface Course {
   status: CourseStatus
   highlights: string[]
   curriculum: { week: number; title: string; topics: string[] }[]
+  /** 이 강의를 신청해 승인받으면 접근 가능한 학습 사이트들 (관리자 큐레이션) */
+  learning_sites: LearningSite[]
   created_at: string
   approved_at: string | null
 }

@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { COMPANY, siteCategories } from '../../data/familySites'
+import { COMPANY } from '../../data/familySites'
 
 export function Footer() {
   return (
@@ -63,13 +63,10 @@ export function Footer() {
             ))}
           </ul>
 
-          {/* Family Site dropdown-style link */}
+          {/* 본사이트 단순 링크 */}
           <div style={{ marginTop: 24 }}>
-            <div style={{ fontSize: 11, color: '#9ca3af', letterSpacing: '0.16em', fontWeight: 800, marginBottom: 10 }}>
-              FAMILY SITES
-            </div>
             <a
-              href={COMPANY.portalSite.url}
+              href={COMPANY.parentSite.url}
               target="_blank"
               rel="noopener noreferrer"
               style={{
@@ -84,7 +81,7 @@ export function Footer() {
                 fontWeight: 700,
               }}
             >
-              {COMPANY.portalSite.name} · 전체 {siteCategories.reduce((a, c) => a + c.count, 0)}개 사이트
+              {COMPANY.parentSite.name} 본사이트
               <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden>
                 <path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>

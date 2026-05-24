@@ -35,6 +35,11 @@ create table if not exists public.seminar_courses (
   status text not null default 'pending' check (status in ('draft','pending','approved','rejected','archived')),
   highlights jsonb not null default '[]'::jsonb,
   curriculum jsonb not null default '[]'::jsonb,
+  /**
+   * 강의에 매핑된 학습 사이트. 신청 승인된 사용자에게만 마이페이지에서 공개됩니다.
+   * 형식: [{ id, name, url, description }]
+   */
+  learning_sites jsonb not null default '[]'::jsonb,
   created_at timestamptz not null default now(),
   approved_at timestamptz
 );
