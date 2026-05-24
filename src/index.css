@@ -163,6 +163,37 @@
   }
 }
 
+/* ---------- 4.5. Card tone variants (액센트 컬러 기반) ----------
+   카드의 background 톤을 액센트 컬러에서 파생.
+   컬러 피커로 스킴을 바꾸면 모든 카드가 자동으로 같은 톤 패밀리로 동기화됨.
+*/
+:root {
+  /* 강한 카드 (눈에 띄는 영웅 카드) — accent-900 ~ accent-700 */
+  --tone-strong:   var(--accent-900);
+  --tone-strong-2: var(--accent-800);
+  --tone-strong-fg: #fff;
+
+  /* 중간 카드 — accent-700 */
+  --tone-mid:    var(--accent-700);
+  --tone-mid-fg: #fff;
+
+  /* 부드러운 카드 — accent-600 */
+  --tone-soft:    var(--accent-600);
+  --tone-soft-fg: #fff;
+
+  /* 라이트 카드 — accent-50 (라이트 모드) / dark 표면 (다크 모드) */
+  --tone-light:    var(--accent-50);
+  --tone-light-fg: var(--accent-900);
+
+  /* 중립 카드 — surface */
+  --tone-neutral:    var(--surface);
+  --tone-neutral-fg: var(--text);
+}
+[data-theme='dark'] {
+  --tone-light:    rgba(59,130,246,0.12);
+  --tone-light-fg: var(--accent-200);
+}
+
 /* ---------- 5. Type & layout tokens ---------- */
 :root {
   --font-sans: 'Nanum Gothic', 'Apple SD Gothic Neo', 'Malgun Gothic', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;

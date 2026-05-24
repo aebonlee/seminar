@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useData } from '../../contexts/DataContext'
 import { useToast } from '../../contexts/ToastContext'
+import { familySites, siteCategories } from '../../data/familySites'
 import type { Course } from '../../types'
 
 export function NewCourse() {
@@ -26,6 +27,23 @@ export function NewCourse() {
     end_date: '',
     highlights: '',
   })
+
+  /** 강의에 매핑할 학습 사이트 id 셋 */
+  const [siteIds, setSiteIds] = useState<Set<string>>(new Set())
+  const [siteCat, setSiteCat] = useState<string>('all')
+  const sitesForCat = useMemo(
+    () => (siteCat === 'all' ? familySites : familySites.filter((s) => s.category === siteCat)),
+    [siteCat],
+  )
+
+  const toggleSite = (id: string) => {
+    setSiteIds((prev) => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
 
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) =>
     setForm((f) => ({ ...f, [key]: value }))
@@ -54,6 +72,9 @@ export function NewCourse() {
           .map((s) => s.trim())
           .filter(Boolean),
         curriculum: [],
+        learning_sites: familySites
+          .filter((s) => siteIds.has(s.id))
+          .map((s) => ({ id: s.id, name: s.nameKo, url: s.url, description: s.description })),
       })
       toast.show('강의가 등록되었습니다. 승인 처리하면 공개됩니다.', 'success')
       navigate('/admin/courses')
@@ -118,6 +139,69 @@ export function NewCourse() {
           onChange={(e) => set('highlights', e.target.value)}
           placeholder="실전 케이스 스터디&#10;1:1 멘토링 포함&#10;수료증 발급"
         />
+      </div>
+
+      {/* 학습 사이트 매핑 */}
+      <div className="form-group" style={{ marginTop: 24, paddingTop: 24, borderTop: '1px solid var(--border)' }}>
+        <label className="form-label">
+          학습 사이트 매핑 ({siteIds.size}개 선택됨)
+        </label>
+        <p className="form-help" style={{ marginTop: 0, marginBottom: 12 }}>
+          이 강의 신청이 승인된 사용자에게만 마이페이지에서 공개됩니다. 강의 주제에 맞는 사이트를 큐레이션해주세요.
+        </p>
+
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 10 }}>
+          <Pill active={siteCat === 'all'} onClick={() => setSiteCat('all')}>전체</Pill>
+          {siteCategories.map((c) => (
+            <Pill key={c.id} active={siteCat === c.id} onClick={() => setSiteCat(c.id)}>
+              {c.icon} {c.nameKo}
+            </Pill>
+          ))}
+        </div>
+
+        <div
+          style={{
+            maxHeight: 280,
+            overflowY: 'auto',
+            border: '1px solid var(--border)',
+            borderRadius: 'var(--r-md)',
+            padding: 10,
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))',
+            gap: 6,
+            background: 'var(--bg-soft)',
+          }}
+        >
+          {sitesForCat.map((s) => {
+            const checked = siteIds.has(s.id)
+            return (
+              <label
+                key={s.id}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  padding: '8px 10px',
+                  background: checked ? 'var(--accent-50)' : 'var(--surface)',
+                  border: `1px solid ${checked ? 'var(--accent-300)' : 'var(--border)'}`,
+                  borderRadius: 6,
+                  cursor: 'pointer',
+                  fontSize: 13,
+                  color: 'var(--text)',
+                  transition: 'all 0.12s var(--ease)',
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggleSite(s.id)}
+                  style={{ accentColor: 'var(--accent-600)' }}
+                />
+                <span style={{ fontWeight: checked ? 700 : 500 }}>{s.nameKo}</span>
+              </label>
+            )
+          })}
+        </div>
       </div>
 
       <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, marginTop: 16 }}>
@@ -190,5 +274,26 @@ function SelectField({
         ))}
       </select>
     </div>
+  )
+}
+
+function Pill({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      style={{
+        padding: '6px 12px',
+        fontSize: 12,
+        fontWeight: 700,
+        background: active ? 'var(--accent-600)' : 'transparent',
+        color: active ? '#fff' : 'var(--text-2)',
+        border: `1px solid ${active ? 'var(--accent-600)' : 'var(--border)'}`,
+        borderRadius: 999,
+        cursor: 'pointer',
+      }}
+    >
+      {children}
+    </button>
   )
 }

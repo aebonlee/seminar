@@ -1,101 +1,83 @@
-import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { SubPage } from '../components/layout/SubPage'
-import { COMPANY, familySites, siteCategories } from '../data/familySites'
+import { familySites, siteCategories } from '../data/familySites'
 
+/**
+ * 운영 학습 분야 페이지.
+ *
+ * 정책 — 100여 개 학습 사이트 URL을 일반 사용자에게 직접 공개하지 않습니다.
+ * 사용자는 본 사이트에서 강의를 신청하고 관리자 승인을 받아야 해당 강의에
+ * 큐레이션된 학습 사이트(MyPage에서 제공) 에 접근할 수 있습니다.
+ *
+ * 본 페이지에서는 운영 중인 분야와 분야별 사이트 개수만 노출합니다.
+ */
 export function Network() {
-  const [cat, setCat] = useState<string>('all')
-  const [q, setQ] = useState('')
-
-  const filtered = useMemo(() => {
-    const kw = q.trim().toLowerCase()
-    return familySites.filter((s) => {
-      const okCat = cat === 'all' || s.category === cat
-      const okKw =
-        !kw ||
-        s.nameKo.toLowerCase().includes(kw) ||
-        s.name.toLowerCase().includes(kw) ||
-        s.description.toLowerCase().includes(kw)
-      return okCat && okKw
-    })
-  }, [cat, q])
-
   const total = familySites.length
-  const byCat = useMemo(() => {
-    const m: Record<string, number> = {}
-    familySites.forEach((s) => (m[s.category] = (m[s.category] ?? 0) + 1))
-    return m
-  }, [])
-
   return (
     <SubPage
-      title="DreamIT 사이트 네트워크"
-      description={`${total}개 교육·서비스 플랫폼을 한눈에. 카테고리별 분류 + 검색으로 빠르게 찾아보세요.`}
-      breadcrumb={[{ label: '소개', to: '/about' }, { label: 'Network' }]}
+      title="운영 학습 분야"
+      description={`DreamIT은 ${siteCategories.length}개 분야 · 총 ${total}개 학습 플랫폼을 운영합니다. 강의 신청 후 승인되면, 강의별로 큐레이션된 학습 사이트가 마이페이지에서 함께 제공됩니다.`}
+      breadcrumb={[{ label: '소개', to: '/about' }, { label: '운영 분야' }]}
     >
-      {/* 검색바 + 카테고리 */}
+      {/* 안내 패널 */}
       <div
         style={{
-          background: '#fff',
-          padding: 22,
-          boxShadow: '0 8px 24px rgba(5,10,24,0.16)',
-          marginBottom: 18,
+          background: 'var(--accent-50)',
+          border: '1px solid var(--accent-200)',
+          padding: 20,
+          marginBottom: 20,
+          display: 'flex',
+          gap: 14,
+          alignItems: 'flex-start',
+          color: 'var(--accent-900)',
         }}
       >
-        <input
-          type="search"
-          value={q}
-          onChange={(e) => setQ(e.target.value)}
-          placeholder="사이트 이름 또는 설명으로 검색..."
-          style={{
-            width: '100%',
-            padding: '12px 16px',
-            border: '1px solid #cbd5e1',
-            borderRadius: 8,
-            fontSize: 15,
-            outline: 'none',
-            color: '#0f172a',
-            background: '#fff',
-          }}
-        />
-
-        <div style={{ marginTop: 16, display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-          <Pill active={cat === 'all'} onClick={() => setCat('all')}>
-            전체 <span style={{ marginLeft: 4, opacity: 0.7 }}>{total}</span>
-          </Pill>
-          {siteCategories.map((c) => (
-            <Pill key={c.id} active={cat === c.id} onClick={() => setCat(c.id)}>
-              <span style={{ marginRight: 4 }}>{c.icon}</span>
-              {c.nameKo}
-              <span style={{ marginLeft: 4, opacity: 0.7 }}>{byCat[c.id] ?? 0}</span>
-            </Pill>
-          ))}
+        <span aria-hidden style={{ fontSize: 20 }}>ⓘ</span>
+        <div style={{ fontSize: 14, lineHeight: 1.7 }}>
+          학습 사이트의 직접 URL은 보안·운영 정책상 공개하지 않습니다. <br />
+          관심 분야의 강의를 신청하면, 승인 시 강의에 매핑된 학습 사이트들을
+          <strong style={{ marginInline: 4 }}>마이페이지</strong>에서 안내드립니다.
         </div>
       </div>
 
-      {/* 결과 */}
-      {filtered.length === 0 ? (
-        <div
-          style={{
-            background: '#fff',
-            padding: 64,
-            textAlign: 'center',
-            color: '#64748b',
-            boxShadow: '0 8px 24px rgba(5,10,24,0.16)',
-          }}
-        >
-          검색 결과가 없습니다.
-        </div>
-      ) : (
-        renderByCategory(filtered)
-      )}
+      {/* 카테고리 그리드 */}
+      <div
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
+          gap: 14,
+        }}
+      >
+        {siteCategories.map((c) => (
+          <div
+            key={c.id}
+            style={{
+              background: '#fff',
+              padding: 22,
+              boxShadow: '0 8px 20px rgba(5,10,24,0.14)',
+              border: '1px solid rgba(15,23,42,0.06)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10 }}>
+              <span style={{ fontSize: 22 }} aria-hidden>{c.icon}</span>
+              <h4 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 800, color: '#0f172a' }}>
+                {c.nameKo}
+              </h4>
+              <span style={{ marginLeft: 'auto', fontSize: 12, fontWeight: 800, color: 'var(--accent-700)' }}>
+                {c.count}개
+              </span>
+            </div>
+            <div style={{ marginTop: 4, fontSize: 12, color: '#94a3b8' }}>{c.name}</div>
+          </div>
+        ))}
+      </div>
 
-      {/* 본사 사이트 안내 */}
+      {/* CTA */}
       <div
         style={{
           marginTop: 32,
           padding: 28,
-          background:
-            'linear-gradient(135deg, var(--accent-700) 0%, var(--accent-500) 100%)',
+          background: 'linear-gradient(135deg, var(--accent-800) 0%, var(--accent-600) 100%)',
           color: '#fff',
           display: 'flex',
           alignItems: 'center',
@@ -106,163 +88,51 @@ export function Network() {
         }}
       >
         <div>
-          <div style={{ fontSize: 12, letterSpacing: '0.16em', color: '#fcd34d', fontWeight: 800 }}>HEADQUARTER</div>
-          <h3 style={{ margin: '6px 0 0', fontSize: '1.4rem', fontWeight: 800 }}>
-            {COMPANY.parentSite.name} — DreamIT 전체 사이트의 본 허브
+          <div style={{ fontSize: 12, letterSpacing: '0.16em', color: 'var(--accent-200)', fontWeight: 800 }}>NEXT STEP</div>
+          <h3 style={{ margin: '6px 0 0', fontSize: '1.3rem', fontWeight: 800 }}>
+            관심 분야의 강의를 둘러보고 신청하세요
           </h3>
+          <p style={{ marginTop: 6, marginBottom: 0, color: 'rgba(255,255,255,0.85)', fontSize: 13 }}>
+            승인 후 마이페이지에서 강의에 매핑된 학습 사이트에 접근할 수 있습니다.
+          </p>
         </div>
-        <a
-          href={COMPANY.parentSite.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '12px 20px',
-            background: '#fff',
-            color: 'var(--accent-700)',
-            textDecoration: 'none',
-            fontWeight: 800,
-          }}
-        >
-          본사이트 방문
-          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden>
-            <path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </a>
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+          <Link
+            to="/courses"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '12px 20px',
+              background: '#fff',
+              color: 'var(--accent-700)',
+              textDecoration: 'none',
+              fontWeight: 800,
+            }}
+          >
+            모집 강의 보기
+            <svg width="11" height="11" viewBox="0 0 16 16" fill="none" aria-hidden>
+              <path d="M3 8h10M8 3l5 5-5 5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+            </svg>
+          </Link>
+          <Link
+            to="/apply"
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '12px 20px',
+              background: 'transparent',
+              color: '#fff',
+              textDecoration: 'none',
+              fontWeight: 800,
+              border: '1px solid rgba(255,255,255,0.5)',
+            }}
+          >
+            신청서 작성
+          </Link>
+        </div>
       </div>
     </SubPage>
-  )
-}
-
-function renderByCategory(sites: ReturnType<typeof familySites.filter>) {
-  const byCat: Record<string, typeof sites> = {}
-  sites.forEach((s) => {
-    ;(byCat[s.category] ??= []).push(s)
-  })
-  return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-      {siteCategories.map((cat) => {
-        const list = byCat[cat.id]
-        if (!list || list.length === 0) return null
-        return (
-          <section key={cat.id}>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'baseline',
-                gap: 10,
-                marginBottom: 12,
-                color: '#fff',
-                textShadow: '0 1px 8px rgba(0,0,0,0.3)',
-              }}
-            >
-              <span style={{ fontSize: 20 }} aria-hidden>{cat.icon}</span>
-              <h3 style={{ margin: 0, fontSize: '1.25rem', fontWeight: 800, color: '#fff' }}>
-                {cat.nameKo}
-              </h3>
-              <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, fontWeight: 700 }}>
-                · {list.length}
-              </span>
-            </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))',
-                gap: 12,
-              }}
-            >
-              {list.map((s) => (
-                <SiteCard key={s.id} site={s} />
-              ))}
-            </div>
-          </section>
-        )
-      })}
-    </div>
-  )
-}
-
-function SiteCard({ site }: { site: (typeof familySites)[number] }) {
-  return (
-    <a
-      href={site.url}
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        padding: 18,
-        background: '#fff',
-        color: '#0f172a',
-        textDecoration: 'none',
-        border: '1px solid rgba(15,23,42,0.06)',
-        boxShadow: '0 6px 16px rgba(5,10,24,0.14)',
-        transition: 'transform 0.15s var(--ease), box-shadow 0.15s var(--ease), border-color 0.15s var(--ease)',
-      }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-2px)'
-        e.currentTarget.style.borderColor = 'var(--accent-500)'
-        e.currentTarget.style.boxShadow = '0 10px 24px rgba(5,10,24,0.2)'
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)'
-        e.currentTarget.style.borderColor = 'rgba(15,23,42,0.06)'
-        e.currentTarget.style.boxShadow = '0 6px 16px rgba(5,10,24,0.14)'
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <div style={{ fontSize: 11, color: 'var(--accent-700)', fontWeight: 800, letterSpacing: '0.06em' }}>
-          {site.name}
-        </div>
-        <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" style={{ color: '#94a3b8' }} aria-hidden>
-          <path d="M3 13L13 3M6 3h7v7" />
-        </svg>
-      </div>
-      <h4 style={{ margin: '6px 0 0', fontSize: '0.98rem', fontWeight: 800, lineHeight: 1.35 }}>{site.nameKo}</h4>
-      <p style={{ marginTop: 8, marginBottom: 0, color: '#475569', fontSize: 12, lineHeight: 1.55, flex: 1 }}>
-        {site.description}
-      </p>
-      {site.features.length > 0 && (
-        <div style={{ marginTop: 10, display: 'flex', gap: 4, flexWrap: 'wrap' }}>
-          {site.features.map((f) => (
-            <span
-              key={f}
-              style={{
-                fontSize: 10,
-                padding: '2px 6px',
-                background: '#f1f5f9',
-                color: '#475569',
-                fontWeight: 700,
-              }}
-            >
-              {f}
-            </span>
-          ))}
-        </div>
-      )}
-    </a>
-  )
-}
-
-function Pill({ active, onClick, children }: { active: boolean; onClick: () => void; children: React.ReactNode }) {
-  return (
-    <button
-      onClick={onClick}
-      style={{
-        padding: '7px 14px',
-        fontSize: 13,
-        fontWeight: 700,
-        background: active ? 'var(--accent-600)' : '#f1f5f9',
-        color: active ? '#fff' : '#475569',
-        border: `1px solid ${active ? 'var(--accent-600)' : '#e2e8f0'}`,
-        borderRadius: 999,
-        cursor: 'pointer',
-        transition: 'all 0.15s var(--ease)',
-      }}
-    >
-      {children}
-    </button>
   )
 }
