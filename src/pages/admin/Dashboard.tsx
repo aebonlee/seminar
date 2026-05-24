@@ -28,7 +28,7 @@ export function Dashboard() {
             <div className="gold-text" style={{ fontFamily: 'var(--font-display)', fontSize: '2.6rem', lineHeight: 1, fontWeight: 600 }}>
               {s.k}
             </div>
-            <div style={{ marginTop: 10, fontSize: '0.82rem', color: 'var(--text-2)', letterSpacing: '0.06em' }}>{s.l}</div>
+            <div style={{ marginTop: 10, fontSize: '0.82rem', color: '#475569', letterSpacing: '0.06em' }}>{s.l}</div>
           </Link>
         ))}
       </div>
@@ -39,7 +39,7 @@ export function Dashboard() {
           <Link to="/admin/applications" style={{ fontSize: '0.82rem' }}>전체 보기 →</Link>
         </div>
         {recent.length === 0 ? (
-          <p style={{ color: 'var(--text-2)', margin: 0 }}>아직 신청서가 없습니다.</p>
+          <p style={{ color: '#475569', margin: 0 }}>아직 신청서가 없습니다.</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {recent.map((a) => (
@@ -55,10 +55,10 @@ export function Dashboard() {
                 }}
               >
                 <div>
-                  <div style={{ color: 'var(--text-0)', fontWeight: 500 }}>{a.name}</div>
-                  <div style={{ color: 'var(--text-2)', fontSize: '0.82rem' }}>{a.email}</div>
+                  <div style={{ color: '#0f172a', fontWeight: 500 }}>{a.name}</div>
+                  <div style={{ color: '#475569', fontSize: '0.82rem' }}>{a.email}</div>
                 </div>
-                <div style={{ color: 'var(--text-1)', fontSize: '0.86rem' }}>{a.course?.title ?? a.course_id}</div>
+                <div style={{ color: '#334155', fontSize: '0.86rem' }}>{a.course?.title ?? a.course_id}</div>
                 <span className={`badge badge-${a.status === 'pending' ? 'pending' : a.status === 'approved' ? 'approved' : 'rejected'}`}>
                   {a.status}
                 </span>

@@ -46,14 +46,14 @@ export function ApplicationsAdmin() {
               style={{
                 padding: '10px 18px',
                 background: active ? 'rgba(212,175,55,0.12)' : 'transparent',
-                border: `1px solid ${active ? 'var(--gold-300)' : 'var(--line-2)'}`,
-                color: active ? 'var(--gold-200)' : 'var(--text-1)',
+                border: `1px solid ${active ? 'var(--accent-700)' : 'var(--line-2)'}`,
+                color: active ? 'var(--accent-700)' : '#334155',
                 borderRadius: 999,
                 cursor: 'pointer',
                 fontSize: '0.86rem',
               }}
             >
-              {t.l} <span style={{ color: 'var(--text-3)', marginLeft: 6 }}>({count})</span>
+              {t.l} <span style={{ color: '#64748b', marginLeft: 6 }}>({count})</span>
             </button>
           )
         })}
@@ -61,7 +61,7 @@ export function ApplicationsAdmin() {
 
       {filtered.length === 0 ? (
         <div className="card" style={{ padding: 60, textAlign: 'center' }}>
-          <p style={{ color: 'var(--text-2)', margin: 0 }}>해당 상태의 신청서가 없습니다.</p>
+          <p style={{ color: '#475569', margin: 0 }}>해당 상태의 신청서가 없습니다.</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
@@ -76,14 +76,14 @@ export function ApplicationsAdmin() {
                       <span className={`badge badge-${a.status === 'pending' ? 'pending' : a.status === 'approved' ? 'approved' : 'rejected'}`}>
                         {a.status}
                       </span>
-                      <span style={{ color: 'var(--text-3)', fontSize: '0.78rem' }}>
+                      <span style={{ color: '#64748b', fontSize: '0.78rem' }}>
                         {new Date(a.created_at).toLocaleString('ko-KR')}
                       </span>
                     </div>
                     <h3 style={{ margin: '4px 0', fontSize: '1.15rem' }}>
-                      {a.name} <span style={{ color: 'var(--text-3)', fontSize: '0.85rem', fontWeight: 400 }}>· {a.email}</span>
+                      {a.name} <span style={{ color: '#64748b', fontSize: '0.85rem', fontWeight: 400 }}>· {a.email}</span>
                     </h3>
-                    <div style={{ color: 'var(--text-2)', fontSize: '0.88rem' }}>
+                    <div style={{ color: '#475569', fontSize: '0.88rem' }}>
                       {course?.title ?? a.course_id} · {a.phone}
                       {a.organization ? ` · ${a.organization}` : ''}
                     </div>
@@ -103,7 +103,7 @@ export function ApplicationsAdmin() {
                   <div style={{ marginTop: 18, paddingTop: 18, borderTop: '1px solid var(--line-2)' }}>
                     <div className="form-group">
                       <label className="form-label">신청 동기</label>
-                      <div style={{ color: 'var(--text-1)', whiteSpace: 'pre-wrap', lineHeight: 1.75 }}>
+                      <div style={{ color: '#334155', whiteSpace: 'pre-wrap', lineHeight: 1.75 }}>
                         {a.motivation}
                       </div>
                     </div>
@@ -132,7 +132,7 @@ export function ApplicationsAdmin() {
                     {a.status !== 'pending' && a.admin_note && (
                       <div className="form-group">
                         <label className="form-label">관리자 메모</label>
-                        <div style={{ color: 'var(--text-1)' }}>{a.admin_note}</div>
+                        <div style={{ color: '#334155' }}>{a.admin_note}</div>
                       </div>
                     )}
                   </div>
